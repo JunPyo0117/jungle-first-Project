@@ -26,15 +26,19 @@ def register():
         return render_template('register.html')
     
     data = request.get_json()
+    nickname = data['nickname']
     username = data['username']
     password = data['password'].encode('utf-8')
 
     # 중복 유저 확인
     if users.find_one({'username': username}):
         return jsonify({'msg': 'Username already exists'}), 400
+    
+    if users.find_one({'nickname': nickname}):
+        return jsonify({'msg': 'Username already exists'}), 400
 
     hashed_pw = bcrypt.hashpw(password, bcrypt.gensalt())
-    users.insert_one({'username': username, 'password': hashed_pw})
+    users.insert_one({'nickname': nickname, 'username': username, 'password': hashed_pw})
     return jsonify({'msg': 'User registered successfully'}), 201
 
 # 로그인

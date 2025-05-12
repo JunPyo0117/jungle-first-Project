@@ -24,6 +24,17 @@
                             </h1>
                             <form id="registerForm">
                                 <div class="field">
+                                    <label class="label">닉네임</label>
+                                    <div class="control has-icons-left">
+                                        <input class="input" type="text" name="nickname" id="nickname" placeholder="닉네임을 입력하세요" required>
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-user"></i>
+                                        </span>
+                                    </div>
+                                    <p class="help is-info">2-10자의 한글, 영문, 숫자 조합</p>
+                                    <p class="help is-danger" id="nicknameError" style="display:none;"></p>
+                                </div>
+                                <div class="field">
                                     <label class="label">아이디</label>
                                     <div class="control has-icons-left">
                                         <input class="input" type="text" name="username" id="username" placeholder="아이디를 입력하세요" required>
@@ -97,19 +108,30 @@
             // 영문, 숫자, 특수문자 조합 8-20자
             return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,20}$/.test(password);
         }
+        function validateNickname(nickname) {
+            // 한글, 영문, 숫자 조합 2-10자
+            return /^[가-힣a-zA-Z0-9]{2,10}$/.test(nickname);
+        }
 
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             // 에러 메시지 초기화
+            document.getElementById('nicknameError').style.display = 'none';
             document.getElementById('usernameError').style.display = 'none';
             document.getElementById('passwordError').style.display = 'none';
             document.getElementById('password2Error').style.display = 'none';
 
+            const nickname = document.getElementById('nickname').value.trim();
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const password2 = document.getElementById('password2').value;
             let valid = true;
 
+            if (!validateNickname(nickname)) {
+                document.getElementById('nicknameError').textContent = '닉네임은 한글, 영문, 숫자 조합 2-10자여야 합니다.';
+                document.getElementById('nicknameError').style.display = 'block';
+                valid = false;
+            }
             if (!validateUsername(username)) {
                 document.getElementById('usernameError').textContent = '아이디는 영문, 숫자 조합 4-20자여야 합니다.';
                 document.getElementById('usernameError').style.display = 'block';
@@ -128,6 +150,7 @@
             if (!valid) return;
 
             const data = {
+                nickname: nickname,
                 username: username,
                 password: password
             };
