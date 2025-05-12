@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="has-background-light">
+    <section class="hero is-fullheight">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-centered">
+                    <div class="column is-5-tablet is-4-desktop is-3-widescreen">
+                        <div class="box has-background-white">
+                            <h1 class="title has-text-centered has-text-primary">
+                                <span class="icon-text">
+                                    <span class="icon">
+                                        <i class="fas fa-user-circle"></i>
+                                    </span>
+                                    <span>로그인</span>
+                                </span>
+                            </h1>
+                            <form id="loginForm">
+    <div class="field">
+                                    <label class="label">아이디</label>
+                                    <div class="control has-icons-left">
+                                        <input class="input" type="text" name="username" placeholder="아이디를 입력하세요" required>
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-user"></i>
+                                        </span>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">비밀번호</label>
+                                    <div class="control has-icons-left">
+                                        <input class="input" type="password" name="password" placeholder="비밀번호를 입력하세요" required>
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-lock"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="field">
+      <div class="control">
+                                        <button class="button is-primary is-fullwidth" type="submit">
+                                            <span class="icon">
+                                                <i class="fas fa-sign-in-alt"></i>
+                                            </span>
+                                            <span>로그인</span>
+                                        </button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="control">
+                                        <a href="/register" class="button is-info is-fullwidth">
+                                            <span class="icon">
+                                                <i class="fas fa-user-plus"></i>
+                                            </span>
+                                            <span>회원가입</span>
+                                        </a>
+      </div>
+    </div>
+  </form>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                username: formData.get('username'),
+                password: formData.get('password')
+            };
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('token', result.token);
+                    window.location.href = '/';
+                } else {
+                    alert(result.msg || '로그인 실패');
+                }
+            } catch (error) {
+                alert('오류가 발생했습니다.');
+            }
+        });
+    </script>
+</body>
+</html>
