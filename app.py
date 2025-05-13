@@ -23,7 +23,7 @@ questions = db['questions']
 answers = db['answers']
 
 
-with open('question_list.csv', newline='', encoding='utf-8') as csvfile:
+with open('question_list.csv', newline='', encoding='utf-8-sig') as csvfile:
     reader = csv.DictReader(csvfile)
     data = list(reader)
 
@@ -130,7 +130,8 @@ def dashboard(payload):
 @app.route('/study', methods=['GET'])
 @token_required
 def study(payload):
-    return render_template('study.html')
+    random_question = questions.aggregate([{"$sample": {"size": 1}}]).next();
+    return render_template('study.html', category=random_question['category'], question=random_question['question'])
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=9000, debug=True)
