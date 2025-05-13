@@ -118,5 +118,10 @@ def protected(payload):
 def dashboard(payload):
     return render_template('dashboard.html', nickname=payload['nickname'])
 
+@app.route('/study', methods=['GET'])
+@token_required
+def study(payload):
+    return render_template('study.html')
+
 if __name__ == '__main__':
     app.run('0.0.0.0', port=9000, debug=True)
