@@ -16,8 +16,10 @@ MONGO_URI = "mongodb://localhost:27017"
 
 # MongoDB 연결
 client = MongoClient(MONGO_URI)
-db = client['user_db']
+db = client['cs_paper']
 users = db['users']
+questions = db['questions']
+answers = db['answers']
 
 # 회원가입
 @app.route('/register', methods=['GET', 'POST'])
