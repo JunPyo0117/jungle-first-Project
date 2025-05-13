@@ -6,9 +6,10 @@ import bcrypt
 import jwt
 import datetime
 import os
+import csv
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)  # credentials 지원 추가
+CORS(app, supports_credentials=True)  # credentials 지원 추가   
 
 # 환경 설정
 SECRET_KEY = "YOUR_SECRET_KEY"
@@ -20,6 +21,14 @@ db = client['cs_paper']
 users = db['users']
 questions = db['questions']
 answers = db['answers']
+
+
+with open('question_list.csv', newline='', encoding='utf-8') as csvfile:
+    reader = csv.DictReader(csvfile)
+    data = list(reader)
+
+questions.insert_many(data)
+
 
 # 토큰 검증 미들웨어
 def token_required(f):
