@@ -57,7 +57,7 @@
             justify-content: end;
         }
 
-        button {
+        button, a {
             width: 6em;
             height: 2.4em;
             margin-top: 1em;
@@ -81,7 +81,7 @@
         <textarea id="answer" class="textarea"></textarea>
         <div class="button-wrapper">
             <button class="button is-primary" type="submit">저장</button>
-            <button class="button is-info" type="button">나가기</button>
+            <a href="{{url_for('dashboard')}}" class="button is-info" type="button">나가기</a>
         </div>
     </form>
 </section>

@@ -22,11 +22,10 @@ users = db['users']
 questions = db['questions']
 answers = db['answers']
 
-
+questions.drop()
 with open('question_list.csv', newline='', encoding='utf-8-sig') as csvfile:
     reader = csv.DictReader(csvfile)
     data = list(reader)
-
 questions.insert_many(data)
 
 
