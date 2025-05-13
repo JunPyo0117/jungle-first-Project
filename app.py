@@ -19,6 +19,23 @@ client = MongoClient(MONGO_URI)
 db = client['user_db']
 users = db['users']
 
+# 토큰 검증 미들웨어
+def token_required(f):
+    def decorated(*args, **kwargs):
+        token = request.cookies.get('token')
+        if not token:
+            return jsonify({'msg': 'Token is missing'}), 403
+
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+            return f(payload, *args, **kwargs)
+        except jwt.ExpiredSignatureError:
+            return jsonify({'msg': 'Token expired'}), 403
+        except jwt.InvalidTokenError:
+            return jsonify({'msg': 'Invalid token'}), 403
+    decorated.__name__ = f.__name__
+    return decorated
+
 # 회원가입
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -76,6 +93,7 @@ def login():
     )
     return response
 
+
 # 로그아웃
 @app.route('/logout', methods=['POST'])
 def logout():
@@ -83,24 +101,8 @@ def logout():
     response.delete_cookie('token')
     return response
 
-# 토큰 검증 미들웨어
-def token_required(f):
-    def decorated(*args, **kwargs):
-        token = request.cookies.get('token')
-        if not token:
-            return jsonify({'msg': 'Token is missing'}), 403
 
-        try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-            return f(payload, *args, **kwargs)
-        except jwt.ExpiredSignatureError:
-            return jsonify({'msg': 'Token expired'}), 403
-        except jwt.InvalidTokenError:
-            return jsonify({'msg': 'Invalid token'}), 403
-    decorated.__name__ = f.__name__
-    return decorated
-
-# 보호된 라우트 예시
+# 보호된 라우트 테스트 예시 
 @app.route('/protected', methods=['GET'])
 @token_required
 def protected(payload):
