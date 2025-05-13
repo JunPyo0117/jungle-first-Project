@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>학습하기 | CS 백지 노트</title>
+    <style>
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .box {
+            padding: 1.6em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #timer {
+            margin: 1em;
+        }
+
+        .icon {
+            font-size: 0.9em ;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .textarea {
+            width: 60vw;
+            max-width: 80em;
+            min-width: 20em;
+            height: 40vh;
+            resize: none;
+        }
+
+        .button-wrapper {
+            display: flex;
+            justify-content: end;
+        }
+
+        button {
+            width: 6em;
+            height: 2.4em;
+            margin-top: 1em;
+            margin-left: 1.2em;
+            outline: none;
+            color: white;
+            font-size: 1em;
+            border: none;
+            border-radius: 0.2em;
+        }
+
+    </style>
+</head>
+<body class="has-background-light">
+
+<section class="box">
+    <h3 class="is-size-5">{{category}}</h3>
+    <h1 class="is-size-2 has-text-weight-bold">{{question}}</h1>
+    <div id="timer" class="is-size-3"><span class="icon"><i class="fa-solid fa-clock"></i></span> 03:00</div>
+    <form>
+        <textarea id="answer" class="textarea"></textarea>
+        <div class="button-wrapper">
+            <button class="button is-primary" type="submit">저장</button>
+            <button class="button is-info" type="button">나가기</button>
+        </div>
+    </form>
+</section>
+<script>
+    let secLeft = 180;
+    const timer = document.getElementById("timer");
+    const countdown = setInterval(() => {
+        secLeft--;
+        const minutes = Math.floor(secLeft / 60);
+        const seconds = secLeft % 60;
+
+        if (seconds < 10) {
+            timer.innerHTML = `<span class="icon"><i class="fa-solid fa-clock"></i></span> 0${minutes}:0${seconds}`;
+        } else {
+            timer.innerHTML = `<span class="icon"><i class="fa-solid fa-clock"></i></span> 0${minutes}:${seconds}`;
+        }
+
+        if (secLeft <= 15) {
+            timer.style.color = "red";
+        }
+
+        if (secLeft === 0) {
+            clearInterval(countdown);
+            autoSaveAndRedirect();
+        }
+    }, 1000)
+    window.addEventListener('DOMContentLoaded', countdown);
+
+    function autoSaveAndRedirect() {
+        const content = document.getElementById("answer").value;
+
+        fetch("/answers", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({content})
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = "/next-page";
+                }
+            });
+    }
+
+
+</script>
+</body>
+</html>
