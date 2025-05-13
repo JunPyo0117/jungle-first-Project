@@ -36,6 +36,8 @@
     <h1 class="is-size-2">학습 기록 보기</h1>
     <div class="tabs is-centered">
         <ul>
+            {% set active_cate = request.args.get('cate') %}
+            {% if active_cate == 'yes' %}
             <li class="is-active"><a>Pictures</a></li>
             <li><a>Music</a></li>
             <li><a>Videos</a></li>

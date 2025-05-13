@@ -8,6 +8,8 @@ import datetime
 import os
 import csv
 
+from unicodedata import category
+
 app = Flask(__name__)
 CORS(app, supports_credentials=True)  # credentials 지원 추가   
 
@@ -150,6 +152,13 @@ def saveNewAnswer(payload):
     answers.insert_one({'writer_id': payload['user_id'], 'question_id': question_id, 'updated_at': datetime.datetime.now(), 'content': answer_content})
     return redirect(url_for('study'))
 
+@app.route('/mystudy', methods=['GET'])
+@token_required
+def myStudy(payload):
+    categoryList = ['Data_Structure', 'Operating_System', 'Network', 'Database']
+    active_cate = request.args.get('cate')
+    questionList =
+    return render_template('my_study.html', category=categoryList, active_cate=active_cate, )
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=9000, debug=True)
