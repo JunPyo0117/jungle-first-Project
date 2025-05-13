@@ -22,10 +22,14 @@ users = db['users']
 questions = db['questions']
 answers = db['answers']
 
-questions.drop()
+# 데이터 삭제
+questions.delete_many({})
+
+# 데이터 삽입
 with open('question_list.csv', newline='', encoding='utf-8-sig') as csvfile:
     reader = csv.DictReader(csvfile)
     data = list(reader)
+
 questions.insert_many(data)
 
 
