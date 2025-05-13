@@ -18,11 +18,17 @@
         }
 
         .box {
+            width: 70vw;
             padding: 1.6em;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+        }
+
+        .box h1, .box h3 {
+            padding: 0 2em;
+            text-align: center;
         }
 
         #timer {
@@ -69,7 +75,7 @@
 
 <section class="box">
     <h3 class="is-size-5">{{category}}</h3>
-    <h1 class="is-size-2 has-text-weight-bold">{{question}}</h1>
+    <h1 class="is-size-2 has-background-primary-light">{{question}}</h1>
     <div id="timer" class="is-size-3"><span class="icon"><i class="fa-solid fa-clock"></i></span> 03:00</div>
     <form>
         <textarea id="answer" class="textarea"></textarea>
