@@ -23,7 +23,7 @@ questions = db['questions']
 answers = db['answers']
 
 
-with open('question_list.csv', newline='', encoding='utf-8') as csvfile:
+with open('question_list.csv', newline='', encoding='utf-8-sig') as csvfile:
     reader = csv.DictReader(csvfile)
     data = list(reader)
 
