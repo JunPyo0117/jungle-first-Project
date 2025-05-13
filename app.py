@@ -134,7 +134,17 @@ def dashboard(payload):
 @token_required
 def study(payload):
     random_question = questions.aggregate([{"$sample": {"size": 1}}]).next();
-    return render_template('study.html', category=random_question['category'], question=random_question['question'])
+    return render_template('study.html', question=random_question)
+
+
+@app.route('/answers', methods=['POST'])
+@token_required
+def saveNewAnswer(payload):
+    question_id = request.form.get('question_id')
+    answer_content = request.form.get('answer')
+
+    answers.insert_one({'writer': payload['user_id'], 'question': question_id, 'updated_at': datetime.datetime.now(), 'content': answer_content})
+    return redirect(url_for('study'))
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=9000, debug=True)
