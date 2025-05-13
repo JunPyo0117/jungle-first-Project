@@ -76,8 +76,8 @@ def register():
 # 로그인
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'GET':
-        return render_template('login.html')
+    # if request.method == 'GET':
+    #     return render_template('login.html')
     
     data = request.get_json()
     username = data['username']
@@ -140,11 +140,16 @@ def study(payload):
 @app.route('/answers', methods=['POST'])
 @token_required
 def saveNewAnswer(payload):
-    question_id = request.form.get('question_id')
-    answer_content = request.form.get('answer')
+    if request.content_type == 'application/json':
+        question_id = request.get_json().get('question_id')
+        answer_content = request.get_json().get('answer')
+    else:
+        question_id = request.form.get('question_id')
+        answer_content = request.form.get('answer')
 
-    answers.insert_one({'writer': payload['user_id'], 'question': question_id, 'updated_at': datetime.datetime.now(), 'content': answer_content})
+    answers.insert_one({'writer_id': payload['user_id'], 'question_id': question_id, 'updated_at': datetime.datetime.now(), 'content': answer_content})
     return redirect(url_for('study'))
+
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=9000, debug=True)

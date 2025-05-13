@@ -86,7 +86,7 @@
     <div id="timer" class="is-size-3"><span class="icon"><i class="fa-solid fa-clock"></i></span> 03:00</div>
     <form id="answerForm" action="{{url_for('saveNewAnswer')}}" method="POST">
         <textarea id="answer" name="answer" class="textarea"></textarea>
-        <input type="hidden" name="question_id" value="{{question._id}}">
+        <input type="hidden" id="question_id" name="question_id" value="{{question._id}}">
         <div class="button-wrapper">
             <button class="button is-primary" type="submit">저장</button>
             <a href="{{url_for('dashboard')}}" class="button is-info" type="button">나가기</a>
@@ -94,7 +94,7 @@
     </form>
 </section>
 <script>
-    let secLeft = 180;
+    let secLeft = 18;
     const timer = document.getElementById("timer");
     const countdown = setInterval(() => {
         secLeft--;
@@ -120,12 +120,24 @@
 
     function autoSaveAndRedirect() {
         const content = document.getElementById("answer").value;
+        const question_id = document.getElementById("question_id").value;
 
         fetch("/answers", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({content})
-        });
+            body: JSON.stringify({
+                answer: content,
+                question_id: question_id
+            })
+        }).then(res => {
+            let redirect_url = res.url.substring(res.url.indexOf('/'))
+            if (res.redirected) {
+                window.location.href = redirect_url;
+            } else {
+                alert(`오류가 발생했습니다. 학습하기를 종료합니다.${redirect_url}, {{url_for('study')}}`)
+                window.location.href = "{{url_for('dashboard')}}"
+            }
+        })
     }
 
 
