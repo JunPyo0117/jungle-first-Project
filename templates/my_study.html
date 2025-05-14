@@ -65,7 +65,7 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <a href="#" class="button is-small is-info">
+                                <a href="{{url_for('orderAnswer', question_id=answer.question._id,  mine='true')}}" class="button is-small is-info">
                                     <span class="icon">
                                         <i class="fas fa-eye"></i>
                                     </span>

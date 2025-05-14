@@ -238,6 +238,31 @@ def saveNewAnswer(payload):
          'content': answer_content})
     return redirect(url_for('study'))
 
+# 답변 수정 페이지
+@app.route('/answers/<answer_id>', methods=['GET'])
+@token_required
+def editPage(payload, answer_id):
+    my_id = payload['user_id']
+    answer = answers.find_one({'_id':ObjectId(answer_id)})
+    question = questions.find_one({'_id':ObjectId(answer['question_id'])})
+    writer_id = answer['writer_id']
+    if (my_id != writer_id):        # 사용자 != 작성자
+        return redirect(url_for('myStudy'))
+
+    return render_template('editor.html', question = question, answer = answer)
+
+# 수정 값 저장
+@app.route('/answers/<answer_id>', methods=['POST'])
+@token_required
+def edit(payload, answer_id):
+    answer_content = request.form.get('answer')
+    question_id = request.form.get('question_id')
+
+    if answer_content is None or answer_content.replace(" ", "") == "":
+        return redirect(url_for('orderAnswer', mine=True, question_id=question_id))
+
+    answers.update_one({'_id': ObjectId(answer_id)}, {'$set' : {'content': answer_content, 'updated_at': datetime.datetime.now()}})
+    return redirect(url_for('orderAnswer', mine=True, question_id=question_id))
 
 # 내 학습 목록
 @app.route('/mystudy', methods=['GET'])
@@ -283,26 +308,35 @@ def myStudy(payload):
                            answers=combined_data)
 
 
-# 다른 사람의 답변 보기
-@app.route('/order_answer', methods=['GET'])
+# 답변 보기
+@app.route('/questions/<question_id>/answers', methods=['GET'])
 @token_required
-def orderAnswer(payload):
-    question_id = request.args.get('question_id')
+def orderAnswer(payload, question_id):
+    # question_id = request.args.get('question_id')
+    my_id = payload['user_id']
+
     if not question_id:
         return redirect(url_for('myStudy'))
-    
+
     # 문제 정보 가져오기
     question = questions.find_one({'_id': ObjectId(question_id)})
     if not question:
         return redirect(url_for('myStudy'))
-    
-    # 해당 문제의 모든 답변 가져오기
-    all_answers = list(answers.find({'question_id': question_id}))
+
+    mine = request.args.get('mine') == 'true'
+    if mine:
+        all_answers  = list(answers.find({'question_id': question_id, 'writer_id': my_id}))
+        print(all_answers)
+    else:
+        all_answers = list(answers.find({'question_id': question_id}))
     
     # 각 답변의 작성자 정보와 좋아요 여부 가져오기
     for answer in all_answers:
         writer = users.find_one({'_id': ObjectId(answer['writer_id'])})
         answer['writer_nickname'] = writer['nickname'] if writer else '알 수 없음'
+
+        # 수정 버튼 표시 여부
+        answer['editable'] = (answer['writer_id'] == my_id)
         
         # 현재 사용자가 이 답변에 좋아요를 눌렀는지 확인
         answer['is_liked'] = bool(likes.find_one({
