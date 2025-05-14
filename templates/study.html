@@ -13,9 +13,17 @@
             height: 100vh;
             overflow: hidden;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
         }
+
+        /*.notification {*/
+        /*    position: fixed;*/
+        /*    top:0;*/
+        /*    left: 50%;*/
+        /*    transform: translateX(-50%);*/
+        /*}*/
 
         .box {
             width: 70vw;
@@ -77,26 +85,28 @@
     </style>
 </head>
 <body class="has-background-light">
-<!--js 없이 접근하면 경고-->
-<noscript>
-    <p style="color: red;">이 페이지는 JavaScript가 필요합니다. 활성화해 주세요.</p>
-</noscript>
 <section class="box">
     <div class="question-wrapper">
         <h3 class="is-size-5">{{question.category}}</h3>
+        <!--js 없이 접근하면 경고-->
+        <noscript>
+            <p class="notification is-warning has-text-centered has-text-weight-semibold">이 페이지는 JavaScript가 필요합니다. 활성화해
+                주세요.</p>
+        </noscript>
         <h1 class="is-size-2">{{question.question}}</h1>
     </div>
     <div id="timer" class="is-size-3"><span class="icon"><i class="fa-solid fa-clock"></i></span> 03:00</div>
-    <form id="answerForm" action="{{url_for('saveNewAnswer')}}" method="POST">
+    <form id="answerForm">
         <textarea id="answer" name="answer" class="textarea"></textarea>
         <input type="hidden" id="question_id" name="question_id" value="{{question._id}}">
         <div class="button-wrapper">
-            <button class="button is-primary" type="submit">저장</button>
+            <button class="button is-primary" type="button" onclick="saveAndRedirect()">저장</button>
             <a href="{{url_for('dashboard')}}" class="button is-info" type="button">나가기</a>
         </div>
     </form>
 </section>
 <script>
+    // 타이머
     let secLeft = 18;
     const timer = document.getElementById("timer");
     const countdown = setInterval(() => {
@@ -121,7 +131,8 @@
     }, 1000)
     window.addEventListener('DOMContentLoaded', countdown);
 
-    function autoSaveAndRedirect() {
+    // 저장
+    function saveAndRedirect() {
         const content = document.getElementById("answer").value;
         const question_id = document.getElementById("question_id").value;
 
@@ -150,6 +161,8 @@
         event.preventDefault();
         alert("붙여넣기는 사용할 수 없습니다. 직접 작성해주세요.");
     });
+
+    // ajax로 데이터 전달
 
 </script>
 </body>
