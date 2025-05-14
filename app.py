@@ -27,10 +27,13 @@ answers = db['answers']
 # 데이터 삭제
 questions.delete_many({})
 
-# 데이터 삽입
+# csv 파일 데이터 삽입
 with open('question_list.csv', newline='', encoding='utf-8-sig') as csvfile:
     reader = csv.DictReader(csvfile)
-    data = list(reader)
+    data = []
+    for row in reader:
+        row['number'] = int(row['number'].strip())  # 문자열 → 정수
+        data.append(row)
 
 questions.insert_many(data)
 
@@ -183,10 +186,45 @@ def saveNewAnswer(payload):
 @app.route('/mystudy', methods=['GET'])
 @token_required
 def myStudy(payload):
-    categoryList = ['Data_Structure', 'Operating_System', 'Network', 'Database']
-    active_cate = request.args.get('cate')
-    questionList = False
-    return render_template('my_study.html', category=categoryList, active_cate=active_cate, )
+    # 카테고리 목록
+    categoryList = ['All', 'Data Structure', 'Operating System', 'Network', 'Database']
+    active_cate = request.args.get('cate', 'All')  # 기본값을 'All'로 설정
+    
+    all_questions = list(questions.find())
+    
+    # 사용자의 답변 목록 가져오기
+    user_answers = list(answers.find(
+        {'writer_id': payload['user_id']},
+        sort=[('updated_at', -1)]  # 최신순 정렬
+    ))
+    
+    
+    # 답변과 문제 정보 결합
+    combined_data = []
+    for question in all_questions:
+        # 해당 문제에 대한 사용자의 답변 찾기
+        answer = next((a for a in user_answers if str(a['question_id']) == str(question['_id'])), None)
+        
+        # 문제 정보와 답변 정보 결합
+        combined_data.append({
+            'question': {
+                'category': question.get('category', ''),
+                'question': question.get('question', ''),
+                'number': question.get('number', '')
+            },
+            'content': answer['content'] if answer else None,
+            'updated_at': answer['updated_at'] if answer else None
+        })
+    
+    # 카테고리별 필터링 ('All'이 아닐 때만 필터링)
+    if active_cate and active_cate != 'All':
+        combined_data = [data for data in combined_data if data['question']['category'] == active_cate]
+    
+    
+    return render_template('my_study.html', 
+                         category=categoryList, 
+                         active_cate=active_cate,
+                         answers=combined_data)
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=9000, debug=True)
