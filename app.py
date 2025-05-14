@@ -270,21 +270,25 @@ def myStudy(payload):
     categoryList = ['All', 'Data Structure', 'Operating System', 'Network', 'Database']
     active_cate = request.args.get('cate', 'All')  # 기본값을 'All'로 설정
     query = request.args.get('q', '').strip()
-
+    
+    # 페이지 번호 (기본값 1)
+    page = int(request.args.get('page', 1))
+    per_page = 10  # 페이지당 항목 수
+    
     all_questions = list(questions.find())
-
+    
     # 사용자의 답변 목록 가져오기
     user_answers = list(answers.find(
         {'writer_id': payload['user_id']},
         sort=[('updated_at', -1)]  # 최신순 정렬
     ))
-
+    
     # 답변과 문제 정보 결합
     combined_data = []
     for question in all_questions:
         # 해당 문제에 대한 사용자의 답변 찾기
         answer = next((a for a in user_answers if str(a['question_id']) == str(question['_id'])), None)
-
+        
         # 문제 정보와 답변 정보 결합
         combined_data.append({
             'question': {
@@ -296,22 +300,51 @@ def myStudy(payload):
             'content': answer['content'] if answer else None,
             'updated_at': answer['updated_at'] if answer else None
         })
-
+    
     # 카테고리별 필터링 ('All'이 아닐 때만 필터링)
     if active_cate and active_cate != 'All':
         combined_data = [data for data in combined_data if data['question']['category'] == active_cate]
-
+    
     if query:
         combined_data = [
             data for data in combined_data
             if query.lower() in data['question']['question'].lower()
         ]
-
+    
+    # 전체 페이지 수 계산
+    total_items = len(combined_data)
+    total_pages = (total_items + per_page - 1) // per_page
+    
+    # 페이지 범위 확인 및 조정
+    if page < 1:
+        page = 1
+    elif page > total_pages and total_pages > 0:
+        page = total_pages
+    
+    # 페이지네이션을 위한 페이지 범위 계산
+    start_page = max(1, page - 1)
+    end_page = min(total_pages, page + 1)
+    
+    # 현재 페이지의 데이터만 슬라이싱
+    start_idx = (page - 1) * per_page
+    end_idx = start_idx + per_page
+    
+    # All 카테고리일 때는 페이징하지 않음
+    if active_cate == 'All':
+        paginated_data = combined_data
+    else:
+        paginated_data = combined_data[start_idx:end_idx]
+    
     return render_template('my_study.html',
-                           category=categoryList,
-                           active_cate=active_cate,
-                           answers=combined_data,
-                           query=query)
+                         category=categoryList,
+                         active_cate=active_cate,
+                         answers=paginated_data,
+                         query=query,
+                         current_page=page,
+                         total_pages=total_pages,
+                         show_pagination=active_cate != 'All',
+                         start_page=start_page,
+                         end_page=end_page)
 
 
 # 답변 보기

@@ -95,6 +95,41 @@
                     </tbody>
                 </table>
             </div>
+
+            {% if show_pagination and total_pages > 1 %}
+            <nav class="pagination is-centered mt-5" role="navigation" aria-label="pagination">
+                <ul class="pagination-list">
+                    {% if current_page > 2 %}
+                    <li>
+                        <a href="{{ url_for('myStudy', cate=active_cate, page=1, q=query) }}" class="pagination-link">1</a>
+                    </li>
+                    {% if current_page > 3 %}
+                    <li><span class="pagination-ellipsis">&hellip;</span></li>
+                    {% endif %}
+                    {% endif %}
+
+                    {% for p in range(start_page, end_page + 1) %}
+                    <li>
+                        <a href="{{ url_for('myStudy', cate=active_cate, page=p, q=query) }}" 
+                           class="pagination-link {{ 'is-current' if p == current_page }}">
+                            {{ p }}
+                        </a>
+                    </li>
+                    {% endfor %}
+
+                    {% if current_page < total_pages-1 %}
+                    {% if current_page < total_pages-2 %}
+                    <li><span class="pagination-ellipsis">&hellip;</span></li>
+                    {% endif %}
+                    <li>
+                        <a href="{{ url_for('myStudy', cate=active_cate, page=total_pages, q=query) }}" class="pagination-link">
+                            {{ total_pages }}
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
         </div>
     </section>
 </body>
