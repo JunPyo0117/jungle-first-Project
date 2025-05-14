@@ -40,17 +40,23 @@ def token_required(f):
     def decorated(*args, **kwargs):
         token = request.cookies.get('token')
         if not token:
-            return jsonify({'msg': 'Token is missing'}), 403
+            return redirect(url_for('login'))
 
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
             return f(payload, *args, **kwargs)
         except jwt.ExpiredSignatureError:
-            return jsonify({'msg': 'Token expired'}), 403
+            return redirect(url_for('login'))
         except jwt.InvalidTokenError:
-            return jsonify({'msg': 'Invalid token'}), 403
+            return redirect(url_for('login'))
     decorated.__name__ = f.__name__
     return decorated
+
+# 초기 페이지 
+@app.route('/', methods=['GET'])
+@token_required
+def home(payload):
+    return redirect(url_for('dashboard'))
 
 # 회원가입
 @app.route('/register', methods=['GET', 'POST'])
@@ -78,8 +84,8 @@ def register():
 # 로그인
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # if request.method == 'GET':
-    #     return render_template('login.html')
+    if request.method == 'GET':
+        return render_template('login.html')
     
     data = request.get_json()
     username = data['username']
@@ -117,28 +123,38 @@ def logout():
     response.delete_cookie('token')
     return response
 
-
-# 보호된 라우트 테스트 예시 
-@app.route('/protected', methods=['GET'])
-@token_required
-def protected(payload):
-    return jsonify({
-        'msg': f"Welcome {payload['nickname'] or payload['username']}!",
-        'user_id': payload['user_id']
-    })
-
+# 대시보드
 @app.route('/dashboard', methods=['GET'])
 @token_required
 def dashboard(payload):
-    return render_template('dashboard.html', nickname=payload['nickname'])
+    # 전체 문제 수 계산
+    total_questions = questions.count_documents({})
+    
+    # 사용자의 답변 수 계산
+    user_answers = answers.count_documents({'writer_id': payload['user_id']})
+    
+    # 가장 최근 답변 날짜 가져오기
+    latest_answer = answers.find_one(
+        {'writer_id': payload['user_id']},
+        sort=[('updated_at', -1)]  # updated_at 기준 내림차순 정렬
+    )
+    
+    latest_date = latest_answer['updated_at'] if latest_answer else None
+    
+    return render_template('dashboard.html', 
+                         nickname=payload['nickname'],
+                         total_questions=total_questions,
+                         user_answers=user_answers,
+                         latest_date=latest_date)
 
+# 학습하기
 @app.route('/study', methods=['GET'])
 @token_required
 def study(payload):
     random_question = questions.aggregate([{"$sample": {"size": 1}}]).next();
     return render_template('study.html', question=random_question)
 
-
+# 답변 페이지
 @app.route('/answers', methods=['POST'])
 @token_required
 def saveNewAnswer(payload):
@@ -152,12 +168,13 @@ def saveNewAnswer(payload):
     answers.insert_one({'writer_id': payload['user_id'], 'question_id': question_id, 'updated_at': datetime.datetime.now(), 'content': answer_content})
     return redirect(url_for('study'))
 
+# 내 학습 목록 
 @app.route('/mystudy', methods=['GET'])
 @token_required
 def myStudy(payload):
     categoryList = ['Data_Structure', 'Operating_System', 'Network', 'Database']
     active_cate = request.args.get('cate')
-    questionList =
+    questionList = False
     return render_template('my_study.html', category=categoryList, active_cate=active_cate, )
 
 if __name__ == '__main__':
