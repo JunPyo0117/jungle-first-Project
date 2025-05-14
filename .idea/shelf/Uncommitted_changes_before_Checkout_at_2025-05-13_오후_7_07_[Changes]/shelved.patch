@@ -1,0 +1,77 @@
+Index: question_list.csv
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/question_list.csv b/question_list.csv
+deleted file mode 100644
+--- a/question_list.csv	(revision 5ccfbaca36c539eff2dc638b113ab95616d2563e)
++++ /dev/null	(revision 5ccfbaca36c539eff2dc638b113ab95616d2563e)
+@@ -1,21 +0,0 @@
+-number,category,question
+-1,Data_Structure,Array(List)의 가장 큰 특징과 그로 인해 발생하는 장점과 단점에 대해 설명해주세요.
+-2,Data_Structure,스택과 큐에 대해서 설명해 주세요.
+-3,Data_Structure,힙에 대해 설명해 주세요.
+-4,Data_Structure,배열(Array)과 연결 리스트(Linked List)의 차이점은 무엇인가요?
+-5,Data_Structure,스택(Stack)과 큐(Queue)의 차이점은 무엇인가요?
+-6,Data_Structure,연결 리스트에서 중간 노드를 삭제하는 방법은?
+-7,Data_Structure,이중 연결 리스트(Doubly Linked List)의 장점은 무엇인가요?
+-8,Data_Structure,원형 큐(Circular Queue)는 왜 사용하는가요?
+-9,Data_Structure,함수 호출 스택이란 무엇인가요?
+-10,Data_Structure,스택을 사용해서 괄호가 올바르게 닫혔는지 검사하는 방법은?
+-11,Data_Structure,큐를 두 개 이용해 스택을 구현할 수 있을까요?
+-12,Data_Structure,이진 트리(Binary Tree)와 이진 탐색 트리(BST)의 차이는 무엇인가요?
+-13,Data_Structure,이진 탐색 트리에서 데이터를 탐색하는 시간 복잡도는 얼마인가요?
+-14,Data_Structure,"트리 순회 방식 중 전위(pre-order), 중위(in-order), 후위(post-order)의 차이는?"
+-15,Data_Structure,"균형 이진 트리(AVL 트리, Red-Black 트리)의 필요성은 무엇인가요?"
+-16,Data_Structure,정렬 알고리즘에 대해 설명해 주세요.
+-17,Data_Structure,재귀함수에 대해 설명해 주세요.
+-18,Data_Structure,이진탐색이 무엇인지 설명하세요.
+-19,Data_Structure,해시 테이블(Hash Table)에 대해서 설명해 주세요.
+-20,Data_Structure,해시 테이블(Hash Table)의 검색 시간 복잡도는 어떻게 O(1)을 유지할 수 있나요?
+\ No newline at end of file
+Index: static/main.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/static/main.css b/static/main.css
+new file mode 100644
+--- /dev/null	(date 1747128373392)
++++ b/static/main.css	(date 1747128373392)
+@@ -0,0 +1,34 @@
++@font-face {
++    font-family: 'Freesentation';
++    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-3Light.woff2') format('woff2');
++    font-weight: 300;
++    font-style: normal;
++}
++
++@font-face {
++    font-family: 'Freesentation';
++    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-4Regular.woff2') format('woff2');
++    font-weight: 400;
++    font-style: normal;
++}
++
++@font-face {
++    font-family: 'Freesentation';
++    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-4Regular.woff2') format('woff2');
++    font-weight: 500;
++    font-style: normal;
++}
++
++@font-face {
++    font-family: 'Freesentation';
++    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-6SemiBold.woff2') format('woff2');
++    font-weight: 600;
++    font-style: normal;
++}
++
++@font-face {
++    font-family: 'Freesentation';
++    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-9Black.woff2') format('woff2');
++    font-weight: 900;
++    font-style: normal;
++}
+\ No newline at end of file

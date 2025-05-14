@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0882c2c6-338a-4c43-8a2d-4b6e0dcb15de" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+        <option value="CSS File" />
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
+  <component name="FlaskConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform)); sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo, NoAppException&#10;for module in [&quot;main.py&quot;, &quot;wsgi.py&quot;, &quot;app.py&quot;]:&#10;    try: locals().update(ScriptInfo(app_import_path=module, create_app=None).load_app().make_shell_context()); print(&quot;\nFlask App: %s&quot; % app.import_name); break&#10;    except NoAppException: pass">
+    <envs>
+      <env key="FLASK_APP" value="app" />
+    </envs>
+    <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform)); sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo, NoAppException&#10;for module in [&quot;main.py&quot;, &quot;wsgi.py&quot;, &quot;app.py&quot;]:&#10;    try: locals().update(ScriptInfo(app_import_path=module, create_app=None).load_app().make_shell_context()); print(&quot;\nFlask App: %s&quot; % app.import_name); break&#10;    except NoAppException: pass" />
+    <option name="myEnvs">
+      <map>
+        <entry key="FLASK_APP" value="app" />
+      </map>
+    </option>
+  </component>
+  <component name="Git.Merge.Settings">
+    <option name="BRANCH" value="origin/main" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;sunha20&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/JunPyo0117/jungle-first-Project.git&quot;,
+    &quot;accountId&quot;: &quot;f93f21f7-d3eb-41e2-9327-b5cb6bda4a5f&quot;
+  },
+  &quot;recentNewPullRequestHead&quot;: {
+    &quot;server&quot;: {
+      &quot;useHttp&quot;: false,
+      &quot;host&quot;: &quot;github.com&quot;,
+      &quot;port&quot;: null,
+      &quot;suffix&quot;: null
+    },
+    &quot;owner&quot;: &quot;JunPyo0117&quot;,
+    &quot;repository&quot;: &quot;jungle-first-Project&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2wzV8QZi78J59OJ5RW5GEtz7w9B" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;JavaScript Debug.dashboard.html.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.my_study.html.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.study.html.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\seonha\programming\jungle\week0\cs-paper" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="dashboard.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/cs-paper/templates/dashboard.html" useBuiltInWebServerPort="true">
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JavaScript Debug.dashboard.html" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-PY-251.25410.122" />
+        <option value="bundled-python-sdk-880ecab49056-36ea0e71a18c-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.25410.122" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0882c2c6-338a-4c43-8a2d-4b6e0dcb15de" name="Changes" comment="" />
+      <created>1747044230082</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1747044230082</updated>
+      <workItem from="1747044231045" duration="11909000" />
+      <workItem from="1747104136616" duration="30723000" />
+      <workItem from="1747183358637" duration="38082000" />
+      <workItem from="1747231827937" duration="281000" />
+    </task>
+    <task id="LOCAL-00001" summary="lang=&quot;en&quot; -&gt; lang=&quot;ko&quot;">
+      <option name="closed" value="true" />
+      <created>1747045241729</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1747045241729</updated>
+    </task>
+    <task id="LOCAL-00002" summary="ppt link">
+      <option name="closed" value="true" />
+      <created>1747045880262</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1747045880262</updated>
+    </task>
+    <task id="LOCAL-00003" summary="study html add">
+      <option name="closed" value="true" />
+      <created>1747124224063</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1747124224063</updated>
+    </task>
+    <task id="LOCAL-00004" summary="db fix">
+      <option name="closed" value="true" />
+      <created>1747124242508</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1747124242508</updated>
+    </task>
+    <task id="LOCAL-00005" summary="dashboard url_for(study)">
+      <option name="closed" value="true" />
+      <created>1747125231121</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1747125231121</updated>
+    </task>
+    <task id="LOCAL-00006" summary="rendering random question">
+      <option name="closed" value="true" />
+      <created>1747128218862</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1747128218862</updated>
+    </task>
+    <task id="LOCAL-00007" summary="study page">
+      <option name="closed" value="true" />
+      <created>1747133622784</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1747133622784</updated>
+    </task>
+    <task id="LOCAL-00008" summary="save answer">
+      <option name="closed" value="true" />
+      <created>1747139048114</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1747139048114</updated>
+    </task>
+    <task id="LOCAL-00009" summary="auto save answer">
+      <option name="closed" value="true" />
+      <created>1747143576157</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1747143576157</updated>
+    </task>
+    <task id="LOCAL-00010" summary="my study and question list">
+      <option name="closed" value="true" />
+      <created>1747144397796</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1747144397796</updated>
+    </task>
+    <task id="LOCAL-00011" summary="myStudy 1차">
+      <option name="closed" value="true" />
+      <created>1747145869298</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1747145869298</updated>
+    </task>
+    <task id="LOCAL-00012" summary="js 조작 방지 (noscript)">
+      <option name="closed" value="true" />
+      <created>1747185027726</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1747185027726</updated>
+    </task>
+    <task id="LOCAL-00013" summary="초기 페이지 오류 해결">
+      <option name="closed" value="true" />
+      <created>1747185453795</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1747185453795</updated>
+    </task>
+    <task id="LOCAL-00014" summary="js 조작 방지(save에 요청을 js를 통해서만 보낼 수 있도록)">
+      <option name="closed" value="true" />
+      <created>1747187032861</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1747187032861</updated>
+    </task>
+    <task id="LOCAL-00015" summary="js 조작 방지용 토큰 생성">
+      <option name="closed" value="true" />
+      <created>1747189893375</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1747189893375</updated>
+    </task>
+    <task id="LOCAL-00016" summary="paste 방지 오류 수정">
+      <option name="closed" value="true" />
+      <created>1747190821184</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1747190821184</updated>
+    </task>
+    <task id="LOCAL-00017" summary="js 조작 방지 서버에서 시간 체크">
+      <option name="closed" value="true" />
+      <created>1747203341248</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1747203341248</updated>
+    </task>
+    <task id="LOCAL-00018" summary="consol.log 제거">
+      <option name="closed" value="true" />
+      <created>1747203468720</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1747203468720</updated>
+    </task>
+    <task id="LOCAL-00019" summary="myAnswers, edit">
+      <option name="closed" value="true" />
+      <created>1747211054146</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1747211054146</updated>
+    </task>
+    <task id="LOCAL-00020" summary="디자인">
+      <option name="closed" value="true" />
+      <created>1747219960338</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1747219960338</updated>
+    </task>
+    <task id="LOCAL-00021" summary="알림(로그인 필요, 이미 로그인)">
+      <option name="closed" value="true" />
+      <created>1747222424591</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1747222424591</updated>
+    </task>
+    <task id="LOCAL-00022" summary="알림(로그인 필요, 이미 로그인) / 회독 문제 필터링">
+      <option name="closed" value="true" />
+      <created>1747228936833</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1747228936833</updated>
+    </task>
+    <task id="LOCAL-00023" summary="되돌리기">
+      <option name="closed" value="true" />
+      <created>1747229872956</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1747229872956</updated>
+    </task>
+    <task id="LOCAL-00024" summary="되돌리기">
+      <option name="closed" value="true" />
+      <created>1747229983608</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1747229983608</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/.." />
+    </ignored-roots>
+    <MESSAGE value="lang=&quot;en&quot; -&gt; lang=&quot;ko&quot;" />
+    <MESSAGE value="ppt link" />
+    <MESSAGE value="study html add" />
+    <MESSAGE value="db fix" />
+    <MESSAGE value="dashboard url_for(study)" />
+    <MESSAGE value="rendering random question" />
+    <MESSAGE value="study page" />
+    <MESSAGE value="save answer" />
+    <MESSAGE value="auto save answer" />
+    <MESSAGE value="my study and question list" />
+    <MESSAGE value="myStudy 1차" />
+    <MESSAGE value="js 조작 방지 (noscript)" />
+    <MESSAGE value="초기 페이지 오류 해결" />
+    <MESSAGE value="js 조작 방지(save에 요청을 js를 통해서만 보낼 수 있도록)" />
+    <MESSAGE value="js 조작 방지용 토큰 생성" />
+    <MESSAGE value="paste 방지 오류 수정" />
+    <MESSAGE value="js 조작 방지 서버에서 시간 체크" />
+    <MESSAGE value="consol.log 제거" />
+    <MESSAGE value="myAnswers, edit" />
+    <MESSAGE value="디자인" />
+    <MESSAGE value="알림(로그인 필요, 이미 로그인)" />
+    <MESSAGE value="알림(로그인 필요, 이미 로그인) / 회독 문제 필터링" />
+    <MESSAGE value="되돌리기" />
+    <option name="LAST_COMMIT_MESSAGE" value="되돌리기" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/cs_paper$app.coverage" NAME="app Coverage Results" MODIFIED="1747231861929" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>
