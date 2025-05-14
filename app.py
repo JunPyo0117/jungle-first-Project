@@ -34,6 +34,8 @@ with open('question_list.csv', newline='', encoding='utf-8-sig') as csvfile:
 
 questions.insert_many(data)
 
+# 고정 데이터
+categoryList = ['Data_Structure', 'Operating_System', 'Network', 'Database']
 
 # 토큰 검증 미들웨어
 def token_required(f):
@@ -127,18 +129,20 @@ def protected(payload):
         'user_id': payload['user_id']
     })
 
+### 대시보드
 @app.route('/dashboard', methods=['GET'])
 @token_required
 def dashboard(payload):
     return render_template('dashboard.html', nickname=payload['nickname'])
 
+### 학습하기
 @app.route('/study', methods=['GET'])
 @token_required
 def study(payload):
     random_question = questions.aggregate([{"$sample": {"size": 1}}]).next();
     return render_template('study.html', question=random_question)
 
-
+### 답변 저장하기
 @app.route('/answers', methods=['POST'])
 @token_required
 def saveNewAnswer(payload):
@@ -152,12 +156,17 @@ def saveNewAnswer(payload):
     answers.insert_one({'writer_id': payload['user_id'], 'question_id': question_id, 'updated_at': datetime.datetime.now(), 'content': answer_content})
     return redirect(url_for('study'))
 
-@app.route('/mystudy', methods=['GET'])
-@token_required
-def myStudy(payload):
-    categoryList = ['Data_Structure', 'Operating_System', 'Network', 'Database']
-    active_cate = request.args.get('cate')
-    questionList =
+# ### 학습 리스트 보기
+# @app.route('/history', methods=['GET'])
+# @token_required
+# def myStudy(payload):
+#     user_id = payload['user_id']
+#     active_cate = request.args.get('cate')
+#     questionList = questions.find({'category': active_cate})
+#     quesionIdList = [q['_id'] for q in questions]
+#
+#
+
     return render_template('my_study.html', category=categoryList, active_cate=active_cate, )
 
 if __name__ == '__main__':

@@ -77,7 +77,10 @@
     </style>
 </head>
 <body class="has-background-light">
-
+<!--js 없이 접근하면 경고-->
+<noscript>
+    <p style="color: red;">이 페이지는 JavaScript가 필요합니다. 활성화해 주세요.</p>
+</noscript>
 <section class="box">
     <div class="question-wrapper">
         <h3 class="is-size-5">{{question.category}}</h3>
@@ -140,6 +143,13 @@
         })
     }
 
+    // 붙여넣기 금지
+    const textarea = document.getElementById("myTextarea");
+
+    textarea.addEventListener("paste", function (event) {
+        event.preventDefault();
+        alert("붙여넣기는 사용할 수 없습니다. 직접 작성해주세요.");
+    });
 
 </script>
 </body>
