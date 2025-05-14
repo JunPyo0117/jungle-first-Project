@@ -6,10 +6,8 @@ from bson.objectid import ObjectId
 import bcrypt
 import jwt
 import datetime
-import os
 import csv
 import random
-from unicodedata import category
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)  # credentials 지원 추가   
@@ -29,18 +27,18 @@ answers = db['answers']
 likes = db['likes']  # 좋아요 정보를 저장할 새로운 컬렉션
 
 # 데이터 삭제
-# questions.delete_many({})
-# answers.delete_many({})
+questions.delete_many({})
+answers.delete_many({})
 
 # csv 파일 데이터 삽입
-# with open('question_list.csv', newline='', encoding='utf-8-sig') as csvfile:
-#     reader = csv.DictReader(csvfile)
-#     data = []
-#     for row in reader:
-#         row['number'] = int(row['number'].strip())  # 문자열 → 정수
-#         data.append(row)
+with open('question_list.csv', newline='', encoding='utf-8-sig') as csvfile:
+    reader = csv.DictReader(csvfile)
+    data = []
+    for row in reader:
+        row['number'] = int(row['number'].strip())  # 문자열 → 정수
+        data.append(row)
 
-# questions.insert_many(data)
+questions.insert_many(data)
 
 # 고정 데이터
 categoryList = ['Data_Structure', 'Operating_System', 'Network', 'Database']
