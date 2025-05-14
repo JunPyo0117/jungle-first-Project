@@ -218,7 +218,7 @@ def saveNewAnswer(payload):
 
         started_at = datetime.datetime.fromtimestamp(started_at)
         now = datetime.datetime.now()
-        duration = datetime.timedelta(seconds=210)
+        duration = datetime.timedelta(seconds=20)
 
         if (started_at + duration < now):
             return jsonify({'msg': '입력시간이 정해진 시간을 비정상적으로 초과하였습니다. 학습을 종료합니다.'})
@@ -246,6 +246,7 @@ def myStudy(payload):
     # 카테고리 목록
     categoryList = ['All', 'Data Structure', 'Operating System', 'Network', 'Database']
     active_cate = request.args.get('cate', 'All')  # 기본값을 'All'로 설정
+    query = request.args.get('q', '').strip()
 
     all_questions = list(questions.find())
 
@@ -277,10 +278,17 @@ def myStudy(payload):
     if active_cate and active_cate != 'All':
         combined_data = [data for data in combined_data if data['question']['category'] == active_cate]
 
+    if query:
+        combined_data = [
+            data for data in combined_data
+            if query.lower() in data['question']['question'].lower()
+        ]
+
     return render_template('my_study.html',
                            category=categoryList,
                            active_cate=active_cate,
-                           answers=combined_data)
+                           answers=combined_data,
+                           query=query)
 
 
 # 다른 사람의 답변 보기
