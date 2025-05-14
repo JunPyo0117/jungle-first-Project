@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
+<style>
+    .image.is-128x128 {
+        width: 256px;
+        height: 256px;
+    }
+</style>
+
 <body class="has-background-light">
     <section class="hero is-fullheight">
         <div class="hero-body">
@@ -14,6 +22,11 @@
                 <div class="columns is-centered">
                     <div class="column is-5-tablet is-4-desktop is-3-widescreen">
                         <div class="box has-background-white">
+                            <div class="has-text-centered mb-5">
+                                <figure class="image is-128x128 is-inline-block">
+                                    <img src="{{ url_for('static', filename='cs_paper.png') }}" alt="CS 백지노트">
+                                </figure>
+                            </div>
                             <h1 class="title has-text-centered has-text-primary">
                                 <span class="icon-text">
                                     <span class="icon">
