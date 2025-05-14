@@ -42,22 +42,21 @@ def token_required(f):
     def decorated(*args, **kwargs):
         token = request.cookies.get('token')
         if not token:
-            return jsonify({'msg': 'Token is missing'}), 403
+            return redirect(url_for('login'))
 
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
             return f(payload, *args, **kwargs)
         except jwt.ExpiredSignatureError:
-            return jsonify({'msg': 'Token expired'}), 403
+            return redirect(url_for('login'))
         except jwt.InvalidTokenError:
-            return jsonify({'msg': 'Invalid token'}), 403
+            return redirect(url_for('login'))
     decorated.__name__ = f.__name__
     return decorated
 
 # 초기 페이지
 @app.route('/', methods=['GET'])
-@token_required
-def home(payload):
+def home():
     return redirect(url_for('dashboard'))
 
 # 회원가입
@@ -156,7 +155,7 @@ def study(payload):
     random_question = questions.aggregate([{"$sample": {"size": 1}}]).next();
     return render_template('study.html', question=random_question)
 
-### 답변 저장하기
+# 답변 저장하기
 @app.route('/answers', methods=['POST'])
 @token_required
 def saveNewAnswer(payload):
