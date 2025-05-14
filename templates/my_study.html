@@ -20,7 +20,6 @@
     <section class="section">
         <div class="container">
             <h1 class="title">내 학습 기록</h1>
-            
             <!-- 카테고리 탭 -->
             <div class="tabs is-centered">
                 <ul>
@@ -31,7 +30,18 @@
                     {% endfor %}
                 </ul>
             </div>
-
+            <form method="get" action="{{ url_for('myStudy') }}" class="mb-4">
+              <div class="field has-addons">
+                <div class="control is-expanded">
+                  <input class="input" type="text" name="q" placeholder="문제 검색..." value="{{ request.args.get('q', '') }}">
+                </div>
+                <div class="control">
+                  <button class="button is-info" type="submit">
+                    검색
+                  </button>
+                </div>
+              </div>
+            </form>
             <!-- 문제 목록 테이블 -->
             <div class="table-container">
                 <table class="table is-fullwidth is-striped">
