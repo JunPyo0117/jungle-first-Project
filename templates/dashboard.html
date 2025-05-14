@@ -69,7 +69,7 @@
                                     <span class="icon has-text-info is-large">
                                         <i class="fas fa-calendar-alt fa-2x"></i>
                                     </span>
-                                    <p class="mt-2 is-size-2">최근 답변</p>
+                                    <p class="mt-2 is-size-2">최근 답변 날짜</p>
                                     {% if latest_date %}
                                         <p class="has-text-weight-bold is-size-3">{{ latest_date.strftime('%Y-%m-%d %H:%M') }}</p>
                                     {% else %}
@@ -119,5 +119,10 @@
         }
 
     </script>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <script>alert("{{ messages[0] }}");</script>
+        {% endif %}
+    {% endwith %}
 </body>
 </html>

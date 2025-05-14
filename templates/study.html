@@ -107,14 +107,6 @@
     </form>
 </section>
 <script>
-    // 붙여넣기 금지
-    const textarea = document.getElementById("answer");
-
-    textarea.addEventListener("paste", function (event) {
-        event.preventDefault();
-        alert("붙여넣기는 사용할 수 없습니다. 직접 작성해주세요.");
-    },true);
-
     // 타이머
     let secLeft = 18;
     const timer = document.getElementById("timer");
@@ -135,7 +127,7 @@
 
         if (secLeft === 0) {
             clearInterval(countdown);
-            saveAndRedirect();
+            autoSaveAndRedirect();
         }
     }, 1000)
     window.addEventListener('DOMContentLoaded', countdown);
@@ -163,6 +155,17 @@
             }
         })
     }
+
+    // 붙여넣기 금지
+    const textarea = document.getElementById("myTextarea");
+
+    textarea.addEventListener("paste", function (event) {
+        event.preventDefault();
+        alert("붙여넣기는 사용할 수 없습니다. 직접 작성해주세요.");
+    });
+
+    // ajax로 데이터 전달
+
 </script>
 </body>
 </html>
