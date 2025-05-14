@@ -61,7 +61,7 @@
                                         <i class="fas fa-pencil-alt fa-2x"></i>
                                     </span>
                                     <p class="mt-2 is-size-2">나의 답변</p>
-                                    <p class="has-text-weight-bold is-size-2">12개</p>
+                                    <p class="has-text-weight-bold is-size-3">{{ user_answers }}/{{ total_questions }}</p>
                                 </div>
                             </div>
                             <div class="column">
@@ -69,18 +69,21 @@
                                     <span class="icon has-text-info is-large">
                                         <i class="fas fa-calendar-alt fa-2x"></i>
                                     </span>
-                                    <p class="mt-2 is-size-2">공부한 날짜</p>
-                                    <p class="has-text-weight-bold is-size-2">15일</p>
+                                    <p class="mt-2 is-size-2">최근 답변</p>
+                                    {% if latest_date %}
+                                        <p class="has-text-weight-bold is-size-3">{{ latest_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                                    {% else %}
+                                        <p class="has-text-weight-bold is-size-2">-</p>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="column">
-                                <div class="box has-text-centered">
+                                <a href="{{ url_for('myStudy') }}" class="box has-text-centered">
                                     <span class="icon has-text-success is-large">
                                         <i class="fas fa-book fa-2x"></i>
                                     </span>
-                                    <p class="mt-2 is-size-2">내 학습</p>
-                                    <p class="has-text-weight-bold is-size-2">3개</p>
-                                </div>
+                                    <p class="mt-2 is-size-2 mb-6">내 학습</p>
+                                </a>
                             </div>
                         </div>
                         <!-- 학습하기 버튼 -->
@@ -115,22 +118,6 @@
             }
         }
 
-        // 페이지 로드 시 토큰 확인
-        async function checkAuth() {
-            try {
-                const response = await fetch('/protected', {
-                    credentials: 'include'
-                });
-                if (!response.ok) {
-                    window.location.href = '/login';
-                }
-            } catch (error) {
-                window.location.href = '/login';
-            }
-        }
-
-        // 페이지 로드 시 인증 확인
-        checkAuth();
     </script>
 </body>
 </html>
