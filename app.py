@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, make_response, redirect, url_for
+from flask import Flask, request, jsonify, render_template, make_response, redirect, url_for, flash
 from flask_cors import CORS
 from jwt import InvalidTokenError, ExpiredSignatureError
 from pymongo import MongoClient
@@ -8,7 +8,7 @@ import jwt
 import datetime
 import os
 import csv
-
+import random
 from unicodedata import category
 
 app = Flask(__name__)
@@ -18,6 +18,7 @@ CORS(app, supports_credentials=True)  # credentials 지원 추가
 SECRET_KEY = "YOUR_SECRET_KEY"
 PAGE_SECRET = "page secret key"
 MONGO_URI = "mongodb://localhost:27017"
+app.secret_key = 'your_secret_key'
 
 # MongoDB 연결
 client = MongoClient(MONGO_URI)
@@ -25,19 +26,21 @@ db = client['cs_paper']
 users = db['users']
 questions = db['questions']
 answers = db['answers']
+likes = db['likes']  # 좋아요 정보를 저장할 새로운 컬렉션
 
 # 데이터 삭제
-questions.delete_many({})
+# questions.delete_many({})
+# answers.delete_many({})
 
 # csv 파일 데이터 삽입
-with open('question_list.csv', newline='', encoding='utf-8-sig') as csvfile:
-    reader = csv.DictReader(csvfile)
-    data = []
-    for row in reader:
-        row['number'] = int(row['number'].strip())  # 문자열 → 정수
-        data.append(row)
+# with open('question_list.csv', newline='', encoding='utf-8-sig') as csvfile:
+#     reader = csv.DictReader(csvfile)
+#     data = []
+#     for row in reader:
+#         row['number'] = int(row['number'].strip())  # 문자열 → 정수
+#         data.append(row)
 
-questions.insert_many(data)
+# questions.insert_many(data)
 
 # 고정 데이터
 categoryList = ['Data_Structure', 'Operating_System', 'Network', 'Database']
@@ -173,8 +176,22 @@ def study(user_payload):
     }
     token = jwt.encode(study_payload, PAGE_SECRET, algorithm='HS256')
 
-    random_question = questions.aggregate([{"$sample": {"size": 1}}]).next();
-    return render_template('study.html', question=random_question, page_token=token);
+    # 사용자가 이미 답변한 문제 목록
+    answered_questions = answers.find({'writer_id': user_payload['user_id']})
+    answered_question_ids = [str(answer['question_id']) for answer in answered_questions]
+
+    # 모든 문제 중에서 아직 답변하지 않은 문제 찾기
+    unanswered_questions = list(questions.find({
+        '_id': {'$nin': [ObjectId(q_id) for q_id in answered_question_ids]}
+    }))
+
+    if not unanswered_questions:
+        flash("모든 문제를 푸셨습니다!")
+        return redirect(url_for('dashboard'))
+
+    # 답변하지 않은 문제 중에서 랜덤 선택
+    random_question = random.choice(unanswered_questions)
+    return render_template('study.html', question=random_question, page_token=token)
 
 
 # 답변 저장하기
@@ -247,6 +264,7 @@ def myStudy(payload):
         # 문제 정보와 답변 정보 결합
         combined_data.append({
             'question': {
+                '_id': str(question['_id']),  # ObjectId를 문자열로 변환
                 'category': question.get('category', ''),
                 'question': question.get('question', ''),
                 'number': question.get('number', '')
@@ -264,6 +282,90 @@ def myStudy(payload):
                            active_cate=active_cate,
                            answers=combined_data)
 
+
+# 다른 사람의 답변 보기
+@app.route('/order_answer', methods=['GET'])
+@token_required
+def orderAnswer(payload):
+    question_id = request.args.get('question_id')
+    if not question_id:
+        return redirect(url_for('myStudy'))
+    
+    # 문제 정보 가져오기
+    question = questions.find_one({'_id': ObjectId(question_id)})
+    if not question:
+        return redirect(url_for('myStudy'))
+    
+    # 해당 문제의 모든 답변 가져오기
+    all_answers = list(answers.find({'question_id': question_id}))
+    
+    # 각 답변의 작성자 정보와 좋아요 여부 가져오기
+    for answer in all_answers:
+        writer = users.find_one({'_id': ObjectId(answer['writer_id'])})
+        answer['writer_nickname'] = writer['nickname'] if writer else '알 수 없음'
+        
+        # 현재 사용자가 이 답변에 좋아요를 눌렀는지 확인
+        answer['is_liked'] = bool(likes.find_one({
+            'user_id': payload['user_id'],
+            'answer_id': str(answer['_id'])
+        }))
+    
+    return render_template('order_answer.html', 
+                         question=question,
+                         answers=all_answers)
+
+# 다른 사람의 답변 좋아요
+@app.route('/like_answer', methods=['POST'])
+@token_required
+def likeAnswer(payload):
+    if request.content_type != 'application/json':
+        return jsonify({"type": "error", 'msg': '잘못된 요청입니다.'})
+    
+    answer_id = request.get_json().get('answer_id')
+    user_id = payload['user_id']
+    
+    if not answer_id:
+        return jsonify({"type": "error", 'msg': '답변 ID가 필요합니다.'})
+    
+    # 이미 좋아요를 눌렀는지 확인
+    existing_like = likes.find_one({
+        'user_id': user_id,
+        'answer_id': answer_id
+    })
+    
+    if existing_like:
+        # 이미 좋아요를 눌렀다면 좋아요 취소
+        likes.delete_one({
+            'user_id': user_id,
+            'answer_id': answer_id
+        })
+        # 답변의 좋아요 수 감소
+        answers.update_one(
+            {'_id': ObjectId(answer_id)},
+            {'$inc': {'likes': -1}}
+        )
+        is_liked = False
+    else:
+        # 좋아요 추가
+        likes.insert_one({
+            'user_id': user_id,
+            'answer_id': answer_id,
+            'created_at': datetime.datetime.now()
+        })
+        # 답변의 좋아요 수 증가
+        answers.update_one(
+            {'_id': ObjectId(answer_id)},
+            {'$inc': {'likes': 1}}
+        )
+        is_liked = True
+    
+    # 업데이트된 답변의 좋아요 수 가져오기
+    answer = answers.find_one({'_id': ObjectId(answer_id)})
+    return jsonify({
+        "type": "success",
+        "likes": answer.get('likes', 0),
+        "is_liked": is_liked
+    })
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=9000, debug=True)

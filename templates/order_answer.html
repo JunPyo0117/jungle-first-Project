@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>다른 답변 보기</title>
+</head>
+<body class="has-background-light">
+    <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/mystudy">
+                <i class="fas fa-arrow-left"></i>
+                <span class="ml-2">내 학습으로 돌아가기</span>
+            </a>
+        </div>
+    </nav>
+
+    <section class="section">
+        <div class="container">
+            <div class="box">
+                <h1 class="title">{{ question.category }}</h1>
+                <h2 class="subtitle">문제 번호 : {{ question.number }}</h2>
+                <div class="content">
+                    <p class="is-size-4">{{ question.question }}</p>
+                </div>
+            </div>
+
+            <div class="box">
+                <h3 class="title is-4">다른 답변들</h3>
+                {% for answer in answers %}
+                <article class="message is-info">
+                    <div class="message-header">
+                        <p>작성자: {{ answer.writer_nickname }}</p>
+                        <div>
+                            <button class="button is-small like-button {{ 'is-danger' if answer.is_liked else 'is-light' }}" data-answer-id="{{ answer._id }}">
+                                <span class="icon">
+                                    <i class="fas fa-heart"></i>
+                                </span>
+                                <span class="like-count">{{ answer.likes|default(0) }}</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="message-body">
+                        {{ answer.content }}
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.querySelectorAll('.like-button').forEach(button => {
+            button.addEventListener('click', async function() {
+                const answerId = this.dataset.answerId;
+                try {
+                    const response = await fetch('/like_answer', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ answer_id: answerId })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.querySelector('.like-count').textContent = data.likes;
+                        
+                        // 좋아요 상태에 따라 버튼 스타일 변경
+                        if (data.is_liked) {
+                            this.classList.remove('is-light');
+                            this.classList.add('is-danger');
+                        } else {
+                            this.classList.remove('is-danger');
+                            this.classList.add('is-light');
+                        }
+                    }
+                } catch (error) {
+                    console.error('좋아요 처리 중 오류 발생:', error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
