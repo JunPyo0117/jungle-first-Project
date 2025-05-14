@@ -137,10 +137,6 @@
         const question_id = document.getElementById("question_id").value;
         let page_token = "{{ page_token }}";
 
-        console.log(page_token)
-        console.log(question_id)
-        console.log(content)
-
         fetch("/answers", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
