@@ -27,18 +27,18 @@ answers = db['answers']
 likes = db['likes']  # 좋아요 정보를 저장할 새로운 컬렉션
 
 # 데이터 삭제
-questions.delete_many({})
+# questions.delete_many({})
 answers.delete_many({})
 
-# csv 파일 데이터 삽입
-with open('question_list.csv', newline='', encoding='utf-8-sig') as csvfile:
-    reader = csv.DictReader(csvfile)
-    data = []
-    for row in reader:
-        row['number'] = int(row['number'].strip())  # 문자열 → 정수
-        data.append(row)
+# # csv 파일 데이터 삽입
+# with open('question_list.csv', newline='', encoding='utf-8-sig') as csvfile:
+#     reader = csv.DictReader(csvfile)
+#     data = []
+#     for row in reader:
+#         row['number'] = int(row['number'].strip())  # 문자열 → 정수
+#         data.append(row)
 
-questions.insert_many(data)
+# questions.insert_many(data)
 
 # 고정 데이터
 categoryList = ['Data_Structure', 'Operating_System', 'Network', 'Database']
@@ -55,10 +55,21 @@ def token_required(f):
             payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
             return f(payload, *args, **kwargs)
         except jwt.ExpiredSignatureError:
+            if request.content_type == 'application/json':
+                return jsonify({
+                    'msg': '로그인이 만료되었습니다.',
+                    'redirect': url_for('login')
+                }), 401
+            flash('로그인이 만료되었습니다.')
             return redirect(url_for('login'))
         except jwt.InvalidTokenError:
+            if request.content_type == 'application/json':
+                return jsonify({
+                    'msg': '비정상적인 접근입니다.',
+                    'redirect': url_for('login')
+                }), 401
+            flash('비정상적인 접근입니다.')
             return redirect(url_for('login'))
-
     decorated.__name__ = f.__name__
     return decorated
 
@@ -97,15 +108,24 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
+        # 이미 로그인된 상태인지 확인
+        token = request.cookies.get('token')
+        if token:
+            try:
+                jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+                flash('이미 로그인되어 있습니다.')
+                return redirect(url_for('dashboard'))
+            except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+                pass
         return render_template('login.html')
-
+    
     data = request.get_json()
     username = data['username']
     password = data['password'].encode('utf-8')
 
     user = users.find_one({'username': username})
     if not user or not bcrypt.checkpw(password, user['password']):
-        return jsonify({'msg': 'Invalid credentials'}), 401
+        return jsonify({'msg': '아이디 또는 비밀번호가 올바르지 않습니다.'}), 401
 
     payload = {
         'user_id': str(user['_id']),
@@ -165,15 +185,6 @@ def dashboard(payload):
 @app.route('/study', methods=['GET'])
 @token_required
 def study(user_payload):
-    # 학습시간 체크용 토큰 발급
-    study_payload = {
-        'user_id': user_payload['user_id'],
-        'type': 'page',
-        'iat': datetime.datetime.utcnow(),
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=10)
-    }
-    token = jwt.encode(study_payload, PAGE_SECRET, algorithm='HS256')
-
     # 사용자가 이미 답변한 문제 목록
     answered_questions = answers.find({'writer_id': user_payload['user_id']})
     answered_question_ids = [str(answer['question_id']) for answer in answered_questions]
@@ -184,8 +195,22 @@ def study(user_payload):
     }))
 
     if not unanswered_questions:
-        flash("모든 문제를 푸셨습니다!")
+        if request.headers.get('Accept') == 'application/json':
+            return jsonify({
+                'msg': '모든 문제를 풀었습니다!',
+                'redirect': url_for('dashboard')
+            }), 400
+        flash('모든 문제를 풀었습니다!')
         return redirect(url_for('dashboard'))
+
+    # 학습시간 체크용 토큰 발급
+    study_payload = {
+        'user_id': user_payload['user_id'],
+        'type': 'page',
+        'iat': datetime.datetime.utcnow(),
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=10)
+    }
+    token = jwt.encode(study_payload, PAGE_SECRET, algorithm='HS256')
 
     # 답변하지 않은 문제 중에서 랜덤 선택
     random_question = random.choice(unanswered_questions)
