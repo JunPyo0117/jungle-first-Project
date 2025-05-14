@@ -151,20 +151,30 @@ def dashboard(payload):
 # 학습하기
 @app.route('/study', methods=['GET'])
 @token_required
-def study(payload):
+def study(user_payload):
+    # 학습시간 체크용 토큰 발급
+    study_payload = {
+        'user_id': user_payload['user_id'],
+        'type': 'page',
+        'iat': datetime.datetime.now(),
+        'exp': datetime.datetime.now() + datetime.timedelta(minutes=5)
+    }
+    token = jwt.encode(study_payload, 'PAGE_SECRET', algorithm='HS256')
+
     random_question = questions.aggregate([{"$sample": {"size": 1}}]).next();
-    return render_template('study.html', question=random_question)
+    return render_template('study.html', question=random_question, page_token=token);
 
 # 답변 저장하기
 @app.route('/answers', methods=['POST'])
 @token_required
 def saveNewAnswer(payload):
-    if request.content_type == 'application/json':
-        question_id = request.get_json().get('question_id')
-        answer_content = request.get_json().get('answer')
-    else:
-        question_id = request.form.get('question_id')
-        answer_content = request.form.get('answer')
+    if request.content_type != 'application/json':
+        return jsonify({"type": "error", 'msg': '올바르지 않은 답변 방식입니다.'})
+
+    question_id = request.get_json().get('question_id')
+    answer_content = request.get_json().get('answer')
+    if answer_content is None or answer_content.replace(" ", "") == "":
+        return jsonify({"type": "pass", 'msg': '답변이 입력되지 않아 저장되지 않았습니다.'})
 
     answers.insert_one({'writer_id': payload['user_id'], 'question_id': question_id, 'updated_at': datetime.datetime.now(), 'content': answer_content})
     return redirect(url_for('study'))
