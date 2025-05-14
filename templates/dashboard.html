@@ -6,110 +6,183 @@
     <title>대시보드</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="has-background-light">
-    <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <a class="navbar-item" href="/dashboard">
-                <i class="fas fa-chart-line"></i>
-                <span class="ml-2">대시보드</span>
-            </a>
-        </div>
-
-        <div class="navbar-end">
-            <div class="navbar-item">
-                <div class="buttons">
-                    <span class="mr-3 has-text-white">안녕하세요, {{ nickname }}님!</span>
-                    <button class="button is-light" onclick="logout()">
-                        <span class="icon">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </span>
-                        <span>로그아웃</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <section class="section">
-        <div class="container">
-            <div class="columns">
-                <div class="column">
-                    <!-- 메인 콘텐츠 -->
-                    <div class="box">
-                        <h1 class="title">환영합니다!</h1>
-                        <p class="subtitle">CS백지노트에 오신 것을 환영합니다.</p>
-                        
-                        <!-- 통계 카드 -->
-                        <div class="columns mt-4">
-                            <div class="column">
-                                <div class="box has-text-centered">
-                                    <span class="icon has-text-primary is-large">
-                                        <i class="fas fa-pencil-alt fa-2x"></i>
-                                    </span>
-                                    <p class="mt-2 is-size-2">나의 답변</p>
-                                    <p class="has-text-weight-bold is-size-3">{{ user_answers }}/{{ total_questions }}</p>
-                                </div>
-                            </div>
-                            <div class="column">
-                                <div class="box has-text-centered">
-                                    <span class="icon has-text-info is-large">
-                                        <i class="fas fa-calendar-alt fa-2x"></i>
-                                    </span>
-                                    <p class="mt-2 is-size-2">최근 답변 날짜</p>
-                                    {% if latest_date %}
-                                        <p class="has-text-weight-bold is-size-3">{{ latest_date.strftime('%Y-%m-%d %H:%M') }}</p>
-                                    {% else %}
-                                        <p class="has-text-weight-bold is-size-2">-</p>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="column">
-                                <a href="{{ url_for('myStudy') }}" class="box has-text-centered">
-                                    <span class="icon has-text-success is-large">
-                                        <i class="fas fa-book fa-2x"></i>
-                                    </span>
-                                    <p class="mt-2 is-size-2 mb-6">내 학습</p>
-                                </a>
-                            </div>
-                        </div>
-                        <!-- 학습하기 버튼 -->
-                        <div class="has-text-centered mt-6 ">
-                            <a href="{{url_for('study')}}" class="button is-primary is-large">
-                                <span class="icon is-large mr-4 ml-2">
-                                    <i class="fas fa-graduation-cap fa-2x"></i>
-                                </span>
-                                <span class="is-size-1 ml-2">학습하기</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <script>
-        async function logout() {
-            try {
-                const response = await fetch('/logout', {
-                    method: 'POST',
-                    credentials: 'include'
-                });
-                if (response.ok) {
-                    window.location.href = '/login';
-                } else {
-                    alert('로그아웃 중 오류가 발생했습니다.');
-                }
-            } catch (error) {
-                alert('오류가 발생했습니다.');
-            }
+    <style>
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100vw;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .nav-end {
+            margin-right: 1.6em;
+        }
+
+        .section {
+            margin-top: 4em;
+            width: 75vw !important;
+            height: 60vh;
+        }
+
+        .main-contents {
+            margin-top: 3em;
+            height: fit-content;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: stretch;
+        }
+
+        .box {
+            height: 20em;
+            width: calc(100% / 3 - 2em);
+            min-height: 10em;
+            padding: 3em 0;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .top-contents {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .study-button {
+            padding: 1.6em;
+        }
+
+        .text {
+            margin-bottom: 2em;
+
+        }
+
+
+    </style>
+    <script>
+        fetch('/dashboard')
+            .then(async (res) => {
+                if (!res.ok) {
+                    const data = await res.json();
+                    alert(data.msg || '문제가 발생했습니다.');
+                    window.location.href = data.redirect
+                } else {
+                    // 정상적인 응답 처리
+                    const html = await res.text();
+                    document.body.innerHTML = html;  // 예시: 렌더링된 HTML을 화면에 넣기
+                }
+            });
     </script>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <script>alert("{{ messages[0] }}");</script>
-        {% endif %}
-    {% endwith %}
+</head>
+<body class="has-background-light">
+<nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/dashboard">
+            <i class="fas fa-chart-line"></i>
+            <span class="ml-2 has-text-weight-semibold">대시보드</span>
+        </a>
+    </div>
+    <div class="buttons nav-end">
+        <span class="mr-3 has-text-weight-semibold has-text-white">안녕하세요, {{ nickname }}님!</span>
+        <button class="button is-light" onclick="logout()">
+            <span class="icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </span>
+            <span>로그아웃</span>
+        </button>
+    </div>
+</nav>
+
+<section class="section">
+    <!-- top contents -->
+    <div class="top-contents">
+        <div>
+            <p class="subtitle">CS백지노트에 오신 것을</p>
+            <h1 class="title is-size-1">환영합니다!</h1>
+        </div>
+        <!-- 학습하기 버튼 -->
+        <div class="has-text-centered ">
+            <a href="{{ url_for('study') }}" class="button is-primary is-large study-button">
+                <span class="icon is-large mr-4 ml-2">
+                    <i class="fas fa-graduation-cap fa-2x"></i>
+                </span>
+                <span class=" is-size-2">학습하기</span>
+            </a>
+        </div>
+    </div>
+    <!-- 통계 카드 -->
+    <div class="main-contents">
+        <div class="box has-text-centered">
+                <span class="icon has-text-primary is-large">
+                    <i class="fas fa-pencil-alt fa-2x"></i>
+                </span>
+            <p class="text mt-2 is-size-5">나의 답변</p>
+            <p class="has-text-weight-bold is-size-3">{{ user_answers }}/{{ total_questions }}</p>
+        </div>
+        <!--        </div>-->
+        <!--        <div class="column">-->
+        <div class="box has-text-centered">
+            <span class="icon has-text-info is-large">
+                <i class="fas fa-calendar-alt fa-2x"></i>
+            </span>
+            <p class="text mt-2 is-size-5">최근 답변 날짜</p>
+            {% if latest_date %}
+                <p class="has-text-weight-bold is-size-3">{{ latest_date.strftime('%Y-%m-%d %H:%M') }}</p>
+            {% else %}
+                <p class="has-text-weight-bold is-size-2">-</p>
+            {% endif %}
+        </div>
+        <!--        </div>-->
+        <!--        <div class="column">-->
+        <a href="{{ url_for('myStudy') }}" class="box has-text-centered">
+            <span class="icon has-text-success is-large">
+                <i class="fas fa-book fa-2x"></i>
+            </span>
+            <p class="text mt-2 is-size-5">바로가기</p>
+            <p class="has-text-weight-bold is-size-3"><span class="icon is-size-5">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </span>
+                내 학습</p>
+
+        </a>
+        <!--        </div>-->
+        <!--    </div>-->
+
+    </div>
+</section>
+
+<script>
+    async function logout() {
+        try {
+            const response = await fetch('/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+            if (response.ok) {
+                window.location.href = '/login';
+            } else {
+                alert('로그아웃 중 오류가 발생했습니다.');
+            }
+        } catch (error) {
+            alert('오류가 발생했습니다.');
+        }
+    }
+</script>
+
 </body>
 </html>
