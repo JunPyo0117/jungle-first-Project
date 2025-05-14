@@ -208,7 +208,8 @@ def saveNewAnswer(payload):
 
     ### 디코딩
     try:
-        decoded = jwt.decode(page_token, PAGE_SECRET, algorithms=['HS256'], options={"verify_iat": True}, leeway=5)  # 5초 허용)
+        decoded = jwt.decode(page_token, PAGE_SECRET, algorithms=['HS256'], options={"verify_iat": True},
+                             leeway=5)  # 5초 허용)
         started_at = decoded.get("iat")
 
         if started_at is None:
@@ -236,18 +237,20 @@ def saveNewAnswer(payload):
          'content': answer_content})
     return redirect(url_for('study'))
 
+
 # 답변 수정 페이지
 @app.route('/answers/<answer_id>', methods=['GET'])
 @token_required
 def editPage(payload, answer_id):
     my_id = payload['user_id']
-    answer = answers.find_one({'_id':ObjectId(answer_id)})
-    question = questions.find_one({'_id':ObjectId(answer['question_id'])})
+    answer = answers.find_one({'_id': ObjectId(answer_id)})
+    question = questions.find_one({'_id': ObjectId(answer['question_id'])})
     writer_id = answer['writer_id']
-    if (my_id != writer_id):        # 사용자 != 작성자
+    if (my_id != writer_id):  # 사용자 != 작성자
         return redirect(url_for('myStudy'))
 
-    return render_template('editor.html', question = question, answer = answer)
+    return render_template('editor.html', question=question, answer=answer)
+
 
 # 수정 값 저장
 @app.route('/answers/<answer_id>', methods=['POST'])
@@ -259,8 +262,10 @@ def edit(payload, answer_id):
     if answer_content is None or answer_content.replace(" ", "") == "":
         return redirect(url_for('orderAnswer', mine=True, question_id=question_id))
 
-    answers.update_one({'_id': ObjectId(answer_id)}, {'$set' : {'content': answer_content, 'updated_at': datetime.datetime.now()}})
+    answers.update_one({'_id': ObjectId(answer_id)},
+                       {'$set': {'content': answer_content, 'updated_at': datetime.datetime.now()}})
     return redirect(url_for('orderAnswer', mine=True, question_id=question_id))
+
 
 # 내 학습 목록
 @app.route('/mystudy', methods=['GET'])
@@ -270,25 +275,25 @@ def myStudy(payload):
     categoryList = ['All', 'Data Structure', 'Operating System', 'Network', 'Database']
     active_cate = request.args.get('cate', 'All')  # 기본값을 'All'로 설정
     query = request.args.get('q', '').strip()
-    
+
     # 페이지 번호 (기본값 1)
     page = int(request.args.get('page', 1))
     per_page = 10  # 페이지당 항목 수
-    
+
     all_questions = list(questions.find())
-    
+
     # 사용자의 답변 목록 가져오기
     user_answers = list(answers.find(
         {'writer_id': payload['user_id']},
         sort=[('updated_at', -1)]  # 최신순 정렬
     ))
-    
+
     # 답변과 문제 정보 결합
     combined_data = []
     for question in all_questions:
         # 해당 문제에 대한 사용자의 답변 찾기
         answer = next((a for a in user_answers if str(a['question_id']) == str(question['_id'])), None)
-        
+
         # 문제 정보와 답변 정보 결합
         combined_data.append({
             'question': {
@@ -300,51 +305,51 @@ def myStudy(payload):
             'content': answer['content'] if answer else None,
             'updated_at': answer['updated_at'] if answer else None
         })
-    
+
     # 카테고리별 필터링 ('All'이 아닐 때만 필터링)
     if active_cate and active_cate != 'All':
         combined_data = [data for data in combined_data if data['question']['category'] == active_cate]
-    
+
     if query:
         combined_data = [
             data for data in combined_data
             if query.lower() in data['question']['question'].lower()
         ]
-    
+
     # 전체 페이지 수 계산
     total_items = len(combined_data)
     total_pages = (total_items + per_page - 1) // per_page
-    
+
     # 페이지 범위 확인 및 조정
     if page < 1:
         page = 1
     elif page > total_pages and total_pages > 0:
         page = total_pages
-    
+
     # 페이지네이션을 위한 페이지 범위 계산
     start_page = max(1, page - 1)
     end_page = min(total_pages, page + 1)
-    
+
     # 현재 페이지의 데이터만 슬라이싱
     start_idx = (page - 1) * per_page
     end_idx = start_idx + per_page
-    
+
     # All 카테고리일 때는 페이징하지 않음
     if active_cate == 'All':
         paginated_data = combined_data
     else:
         paginated_data = combined_data[start_idx:end_idx]
-    
+
     return render_template('my_study.html',
-                         category=categoryList,
-                         active_cate=active_cate,
-                         answers=paginated_data,
-                         query=query,
-                         current_page=page,
-                         total_pages=total_pages,
-                         show_pagination=active_cate != 'All',
-                         start_page=start_page,
-                         end_page=end_page)
+                           category=categoryList,
+                           active_cate=active_cate,
+                           answers=paginated_data,
+                           query=query,
+                           current_page=page,
+                           total_pages=total_pages,
+                           show_pagination=active_cate != 'All',
+                           start_page=start_page,
+                           end_page=end_page)
 
 
 # 답변 보기
@@ -364,11 +369,11 @@ def orderAnswer(payload, question_id):
 
     mine = request.args.get('mine') == 'true'
     if mine:
-        all_answers  = list(answers.find({'question_id': question_id, 'writer_id': my_id}))
+        all_answers = list(answers.find({'question_id': question_id, 'writer_id': my_id}))
         print(all_answers)
     else:
         all_answers = list(answers.find({'question_id': question_id}))
-    
+
     # 각 답변의 작성자 정보와 좋아요 여부 가져오기
     for answer in all_answers:
         writer = users.find_one({'_id': ObjectId(answer['writer_id'])})
@@ -376,16 +381,17 @@ def orderAnswer(payload, question_id):
 
         # 수정 버튼 표시 여부
         answer['editable'] = (answer['writer_id'] == my_id)
-        
+
         # 현재 사용자가 이 답변에 좋아요를 눌렀는지 확인
         answer['is_liked'] = bool(likes.find_one({
             'user_id': payload['user_id'],
             'answer_id': str(answer['_id'])
         }))
-    
-    return render_template('order_answer.html', 
-                         question=question,
-                         answers=all_answers)
+
+    return render_template('order_answer.html',
+                           question=question,
+                           answers=all_answers)
+
 
 # 다른 사람의 답변 좋아요
 @app.route('/like_answer', methods=['POST'])
@@ -393,19 +399,19 @@ def orderAnswer(payload, question_id):
 def likeAnswer(payload):
     if request.content_type != 'application/json':
         return jsonify({"type": "error", 'msg': '잘못된 요청입니다.'})
-    
+
     answer_id = request.get_json().get('answer_id')
     user_id = payload['user_id']
-    
+
     if not answer_id:
         return jsonify({"type": "error", 'msg': '답변 ID가 필요합니다.'})
-    
+
     # 이미 좋아요를 눌렀는지 확인
     existing_like = likes.find_one({
         'user_id': user_id,
         'answer_id': answer_id
     })
-    
+
     if existing_like:
         # 이미 좋아요를 눌렀다면 좋아요 취소
         likes.delete_one({
@@ -431,7 +437,7 @@ def likeAnswer(payload):
             {'$inc': {'likes': 1}}
         )
         is_liked = True
-    
+
     # 업데이트된 답변의 좋아요 수 가져오기
     answer = answers.find_one({'_id': ObjectId(answer_id)})
     return jsonify({
@@ -439,6 +445,18 @@ def likeAnswer(payload):
         "likes": answer.get('likes', 0),
         "is_liked": is_liked
     })
+
+
+# 답변 전체 삭제
+@app.route('/remove_all', methods=['POST'])
+@token_required
+def removeAll(payload):
+    try:
+        answers.delete_many({'writer_id': payload['user_id']})
+        return jsonify({'message': 'Deletion completed successfully', 'status': 'success'})
+    except Exception:
+        return jsonify({'message': 'Deletion failed', 'status': 'error'}), 200
+
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=9000, debug=True)

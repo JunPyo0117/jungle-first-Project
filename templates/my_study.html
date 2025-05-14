@@ -6,131 +6,162 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>내 학습</title>
+    <style>
+        .top-section {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+    </style>
 </head>
 <body class="has-background-light">
-    <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <a class="navbar-item" href="/dashboard">
-                <i class="fas fa-arrow-left"></i>
-                <span class="ml-2">대시보드로 돌아가기</span>
-            </a>
-        </div>
-    </nav>
+<nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/dashboard">
+            <i class="fas fa-arrow-left"></i>
+            <span class="ml-2">대시보드로 돌아가기</span>
+        </a>
+    </div>
+</nav>
 
-    <section class="section">
-        <div class="container">
+<section class="section">
+    <div class="container">
+        <div class="top-section">
             <h1 class="title">내 학습 기록</h1>
-            <!-- 카테고리 탭 -->
-            <div class="tabs is-centered">
-                <ul>
-                    {% for cat in category %}
+            <button class="button is-danger" onclick="removeAll()">내 답변 초기화</button>
+        </div>
+        <!-- 카테고리 탭 -->
+        <div class="tabs is-centered">
+            <ul>
+                {% for cat in category %}
                     <li class="{{ 'is-active' if active_cate == cat }}">
                         <a href="{{ url_for('myStudy', cate=cat) }}">{{ cat }}</a>
                     </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <form method="get" action="{{ url_for('myStudy') }}" class="mb-4">
-              <div class="field has-addons">
+                {% endfor %}
+            </ul>
+        </div>
+        <form method="get" action="{{ url_for('myStudy') }}" class="mb-4">
+            <div class="field has-addons">
                 <div class="control is-expanded">
-                  <input class="input" type="text" name="q" placeholder="문제 검색..." value="{{ request.args.get('q', '') }}">
+                    <input class="input" type="text" name="q" placeholder="문제 검색..."
+                           value="{{ request.args.get('q', '') }}">
                 </div>
                 <div class="control">
-                  <button class="button is-info" type="submit">
-                    검색
-                  </button>
+                    <button class="button is-info" type="submit">
+                        검색
+                    </button>
                 </div>
-              </div>
-            </form>
-            <!-- 문제 목록 테이블 -->
-            <div class="table-container">
-                <table class="table is-fullwidth is-striped">
-                    <thead>
-                        <tr>
-                            <th>번호</th>
-                            <th>카테고리</th>
-                            <th>문제</th>
-                            <th>답변여부</th>
-                            <th>내 답변</th>
-                            <th>다른 답변</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for answer in answers %}
-                        <tr>
-                            <td>
-                                {% if active_cate == 'All' %}
-                                    {{ loop.index }}
-                                {% else %}
-                                    {{ answer.question.number }}
-                                {% endif %}
-                            </td>
-                            <td>{{ answer.question.category }}</td>
-                            <td>{{ answer.question.question }}</td>
-                            <td>
-                                {% if answer.content %}
+            </div>
+        </form>
+        <!-- 문제 목록 테이블 -->
+        <div class="table-container">
+            <table class="table is-fullwidth is-striped">
+                <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>카테고리</th>
+                    <th>문제</th>
+                    <th>답변여부</th>
+                    <th>내 답변</th>
+                    <th>다른 답변</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for answer in answers %}
+                    <tr>
+                        <td>
+                            {% if active_cate == 'All' %}
+                                {{ loop.index }}
+                            {% else %}
+                                {{ answer.question.number }}
+                            {% endif %}
+                        </td>
+                        <td>{{ answer.question.category }}</td>
+                        <td>{{ answer.question.question }}</td>
+                        <td>
+                            {% if answer.content %}
                                 <span class="tag is-success">O</span>
-                                {% else %}
+                            {% else %}
                                 <span class="tag is-danger">X</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <a href="{{url_for('orderAnswer', question_id=answer.question._id,  mine='true')}}" class="button is-small is-info">
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('orderAnswer', question_id=answer.question._id,  mine='true') }}"
+                               class="button is-small is-info">
                                     <span class="icon">
                                         <i class="fas fa-eye"></i>
                                     </span>
-                                    <span>내 답변 보기</span>
-                                </a>
-                            </td>
-                            <td>
-                                <a href="{{ url_for('orderAnswer', question_id=answer.question._id) }}" class="button is-small is-primary">
+                                <span>내 답변 보기</span>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('orderAnswer', question_id=answer.question._id) }}"
+                               class="button is-small is-primary">
                                     <span class="icon">
                                         <i class="fas fa-users"></i>
                                     </span>
-                                    <span>다른 답변 보기</span>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                                <span>다른 답변 보기</span>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-            {% if show_pagination and total_pages > 1 %}
+        {% if show_pagination and total_pages > 1 %}
             <nav class="pagination is-centered mt-5" role="navigation" aria-label="pagination">
                 <ul class="pagination-list">
                     {% if current_page > 2 %}
-                    <li>
-                        <a href="{{ url_for('myStudy', cate=active_cate, page=1, q=query) }}" class="pagination-link">1</a>
-                    </li>
-                    {% if current_page > 3 %}
-                    <li><span class="pagination-ellipsis">&hellip;</span></li>
-                    {% endif %}
+                        <li>
+                            <a href="{{ url_for('myStudy', cate=active_cate, page=1, q=query) }}"
+                               class="pagination-link">1</a>
+                        </li>
+                        {% if current_page > 3 %}
+                            <li><span class="pagination-ellipsis">&hellip;</span></li>
+                        {% endif %}
                     {% endif %}
 
                     {% for p in range(start_page, end_page + 1) %}
-                    <li>
-                        <a href="{{ url_for('myStudy', cate=active_cate, page=p, q=query) }}" 
-                           class="pagination-link {{ 'is-current' if p == current_page }}">
-                            {{ p }}
-                        </a>
-                    </li>
+                        <li>
+                            <a href="{{ url_for('myStudy', cate=active_cate, page=p, q=query) }}"
+                               class="pagination-link {{ 'is-current' if p == current_page }}">
+                                {{ p }}
+                            </a>
+                        </li>
                     {% endfor %}
 
                     {% if current_page < total_pages-1 %}
-                    {% if current_page < total_pages-2 %}
-                    <li><span class="pagination-ellipsis">&hellip;</span></li>
-                    {% endif %}
-                    <li>
-                        <a href="{{ url_for('myStudy', cate=active_cate, page=total_pages, q=query) }}" class="pagination-link">
-                            {{ total_pages }}
-                        </a>
-                    </li>
+                        {% if current_page < total_pages-2 %}
+                            <li><span class="pagination-ellipsis">&hellip;</span></li>
+                        {% endif %}
+                        <li>
+                            <a href="{{ url_for('myStudy', cate=active_cate, page=total_pages, q=query) }}"
+                               class="pagination-link">
+                                {{ total_pages }}
+                            </a>
+                        </li>
                     {% endif %}
                 </ul>
             </nav>
-            {% endif %}
-        </div>
-    </section>
+        {% endif %}
+    </div>
+</section>
+<script>
+    function removeAll() {
+        fetch("/remove_all", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({})
+        }).then(res => {
+            if (res.status === 200) {
+                alert("삭제에 성공하였습니다.");
+                location.reload(true);
+            } else {
+                 alert("삭제에 실패하였습니다.");
+            }
+        })
+    }
+</script>
 </body>
 </html>
