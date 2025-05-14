@@ -17,14 +17,6 @@
             align-items: center;
             justify-content: center;
         }
-
-        /*.notification {*/
-        /*    position: fixed;*/
-        /*    top:0;*/
-        /*    left: 50%;*/
-        /*    transform: translateX(-50%);*/
-        /*}*/
-
         .box {
             width: 70vw;
             padding: 0;
@@ -99,7 +91,6 @@
     <form id="answerForm">
         <textarea id="answer" name="answer" class="textarea"></textarea>
         <input type="hidden" id="question_id" name="question_id" value="{{question._id}}">
-        <input type="hidden" id="page_token" name="page_token" value="{{page_token }}">
         <div class="button-wrapper">
             <button class="button is-primary" type="button" onclick="saveAndRedirect()">저장</button>
             <a href="{{url_for('dashboard')}}" class="button is-info" type="button">나가기</a>
@@ -113,7 +104,7 @@
     textarea.addEventListener("paste", function (event) {
         event.preventDefault();
         alert("붙여넣기는 사용할 수 없습니다. 직접 작성해주세요.");
-    },true);
+    }, true);
 
     // 타이머
     let secLeft = 18;
@@ -144,6 +135,11 @@
     function saveAndRedirect() {
         const content = document.getElementById("answer").value;
         const question_id = document.getElementById("question_id").value;
+        let page_token = "{{ page_token }}";
+
+        console.log(page_token)
+        console.log(question_id)
+        console.log(content)
 
         fetch("/answers", {
             method: "POST",
@@ -154,12 +150,24 @@
                 page_token: page_token
             })
         }).then(res => {
-            let redirect_url = res.url.substring(res.url.indexOf('/'))
             if (res.redirected) {
-                window.location.href = redirect_url;
+                window.location.href = res.url
             } else {
-                alert(`오류가 발생했습니다. 학습하기를 종료합니다.${redirect_url}, {{url_for('study')}}`)
-                window.location.href = "{{url_for('dashboard')}}"
+                const contentType = res.headers.get('Content-Type');
+                if (contentType && contentType.includes('application/json')) {
+                    return res.json();
+                } else {
+                    alert("알 수 없는 오류가 발생했습니다.");
+                    window.location.href = '{{url_for("home")}}';
+                }
+            }
+        }).then(data => {
+            // 토큰 삭제
+            page_token = null
+
+            if (data && data.msg) {
+                alert(data.msg);
+                window.location.href = '{{url_for("home")}}'
             }
         })
     }

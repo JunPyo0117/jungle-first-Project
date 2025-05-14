@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template, make_response, redirect, url_for
 from flask_cors import CORS
+from jwt import InvalidTokenError, ExpiredSignatureError
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import bcrypt
@@ -15,6 +16,7 @@ CORS(app, supports_credentials=True)  # credentials 지원 추가
 
 # 환경 설정
 SECRET_KEY = "YOUR_SECRET_KEY"
+PAGE_SECRET = "page secret key"
 MONGO_URI = "mongodb://localhost:27017"
 
 # MongoDB 연결
@@ -40,6 +42,7 @@ questions.insert_many(data)
 # 고정 데이터
 categoryList = ['Data_Structure', 'Operating_System', 'Network', 'Database']
 
+
 # 토큰 검증 미들웨어
 def token_required(f):
     def decorated(*args, **kwargs):
@@ -54,20 +57,23 @@ def token_required(f):
             return redirect(url_for('login'))
         except jwt.InvalidTokenError:
             return redirect(url_for('login'))
+
     decorated.__name__ = f.__name__
     return decorated
+
 
 # 초기 페이지
 @app.route('/', methods=['GET'])
 def home():
     return redirect(url_for('dashboard'))
 
+
 # 회원가입
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
         return render_template('register.html')
-    
+
     data = request.get_json()
     username = data['username']
     password = data['password'].encode('utf-8')
@@ -85,12 +91,13 @@ def register():
     })
     return jsonify({'msg': 'User registered successfully'}), 201
 
+
 # 로그인
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
-    
+
     data = request.get_json()
     username = data['username']
     password = data['password'].encode('utf-8')
@@ -127,6 +134,7 @@ def logout():
     response.delete_cookie('token')
     return response
 
+
 # 대시보드
 @app.route('/dashboard', methods=['GET'])
 @token_required
@@ -146,10 +154,11 @@ def dashboard(payload):
     latest_date = latest_answer['updated_at'] if latest_answer else None
 
     return render_template('dashboard.html',
-                         nickname=payload['nickname'],
-                         total_questions=total_questions,
-                         user_answers=user_answers,
-                         latest_date=latest_date)
+                           nickname=payload['nickname'],
+                           total_questions=total_questions,
+                           user_answers=user_answers,
+                           latest_date=latest_date)
+
 
 # 학습하기
 @app.route('/study', methods=['GET'])
@@ -159,28 +168,59 @@ def study(user_payload):
     study_payload = {
         'user_id': user_payload['user_id'],
         'type': 'page',
-        'iat': datetime.datetime.now(),
-        'exp': datetime.datetime.now() + datetime.timedelta(minutes=5)
+        'iat': datetime.datetime.utcnow(),
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=10)
     }
-    token = jwt.encode(study_payload, 'PAGE_SECRET', algorithm='HS256')
+    token = jwt.encode(study_payload, PAGE_SECRET, algorithm='HS256')
 
     random_question = questions.aggregate([{"$sample": {"size": 1}}]).next();
     return render_template('study.html', question=random_question, page_token=token);
+
 
 # 답변 저장하기
 @app.route('/answers', methods=['POST'])
 @token_required
 def saveNewAnswer(payload):
+    ### json 응답이 아님 (ex. form 응답의 경우 js를 비활성화한 상태에서 저장할 수 없도록 막아뒀음)
     if request.content_type != 'application/json':
-        return jsonify({"type": "error", 'msg': '올바르지 않은 답변 방식입니다.'})
+        return jsonify({'msg': '올바르지 않은 접근입니다. 학습을 다시 시작해주세요.'})
+
+    # 토큰 검증
+    ### 토큰 추출
+    page_token = request.get_json().get("page_token")
+    if not page_token:
+        return jsonify({'msg': '비정상적인 접근이 감지되었습니다. 학습을 종료합니다.'})  # 페이지 토큰 없음
+
+    ### 디코딩
+    try:
+        decoded = jwt.decode(page_token, PAGE_SECRET, algorithms=['HS256'], options={"verify_iat": True}, leeway=5)  # 5초 허용)
+        started_at = decoded.get("iat")
+
+        if started_at is None:
+            raise InvalidTokenError()
+
+        started_at = datetime.datetime.fromtimestamp(started_at)
+        now = datetime.datetime.now()
+        duration = datetime.timedelta(seconds=210)
+
+        if (started_at + duration < now):
+            return jsonify({'msg': '입력시간이 정해진 시간을 비정상적으로 초과하였습니다. 학습을 종료합니다.'})
+
+    except ExpiredSignatureError:
+        return jsonify({'msg': '입력시간이 정해진 시간을 비정상적으로 초과하였습니다. 학습을 종료합니다.'}), 400
+    except InvalidTokenError:
+        return jsonify({'msg': '비정상적인 접근이 감지되었습니다. 학습을 종료합니다. 2'}), 400
 
     question_id = request.get_json().get('question_id')
     answer_content = request.get_json().get('answer')
     if answer_content is None or answer_content.replace(" ", "") == "":
-        return jsonify({"type": "pass", 'msg': '답변이 입력되지 않아 저장되지 않았습니다.'})
+        return jsonify({'msg': '답변이 입력되지 않았습니다. 학습을 다시 시작해주세요.'})
 
-    answers.insert_one({'writer_id': payload['user_id'], 'question_id': question_id, 'updated_at': datetime.datetime.now(), 'content': answer_content})
+    answers.insert_one(
+        {'writer_id': payload['user_id'], 'question_id': question_id, 'updated_at': datetime.datetime.now(),
+         'content': answer_content})
     return redirect(url_for('study'))
+
 
 # 내 학습 목록
 @app.route('/mystudy', methods=['GET'])
@@ -189,22 +229,21 @@ def myStudy(payload):
     # 카테고리 목록
     categoryList = ['All', 'Data Structure', 'Operating System', 'Network', 'Database']
     active_cate = request.args.get('cate', 'All')  # 기본값을 'All'로 설정
-    
+
     all_questions = list(questions.find())
-    
+
     # 사용자의 답변 목록 가져오기
     user_answers = list(answers.find(
         {'writer_id': payload['user_id']},
         sort=[('updated_at', -1)]  # 최신순 정렬
     ))
-    
-    
+
     # 답변과 문제 정보 결합
     combined_data = []
     for question in all_questions:
         # 해당 문제에 대한 사용자의 답변 찾기
         answer = next((a for a in user_answers if str(a['question_id']) == str(question['_id'])), None)
-        
+
         # 문제 정보와 답변 정보 결합
         combined_data.append({
             'question': {
@@ -215,16 +254,16 @@ def myStudy(payload):
             'content': answer['content'] if answer else None,
             'updated_at': answer['updated_at'] if answer else None
         })
-    
+
     # 카테고리별 필터링 ('All'이 아닐 때만 필터링)
     if active_cate and active_cate != 'All':
         combined_data = [data for data in combined_data if data['question']['category'] == active_cate]
-    
-    
-    return render_template('my_study.html', 
-                         category=categoryList, 
-                         active_cate=active_cate,
-                         answers=combined_data)
+
+    return render_template('my_study.html',
+                           category=categoryList,
+                           active_cate=active_cate,
+                           answers=combined_data)
+
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=9000, debug=True)
